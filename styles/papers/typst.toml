@@ -1,0 +1,9 @@
+[package]
+name = "lpit-publisher-papers"
+version = "0.1.0"
+entrypoint = "style.typ"
+authors = ["Stephen Gaito"]
+license = "MIT"
+description = "The Literate Programming in Typst Publisher style for (AMS like) papers"
+repository = "https://github.com/litProgTypst/publisher"
+

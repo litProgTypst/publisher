@@ -3,9 +3,24 @@
 This Publisher was originally inspired by the [Gerby
 project](https://gerby-project.github.io/).
 
-The key task of the publisher is to maintain a global glossary,
-cross-reference, index, bibliography and table of contents across a number
-of loosely related documents written in [Typst](https://typst.app/).
+The key task of the publisher is to maintain a global overview across a
+number of loosely related documents written in
+[Typst](https://typst.app/).
+
+The global overviews we provide are:
+
+- Table of Contents
+  - with Abstracts
+- Table of Figures
+- Table of Tables
+- Table of Theorems/Lemmas/Definitions/Proofs
+- Table of Code
+- Glossary
+- Cross-references
+- Index
+- bibliography/References
+
+## Details
 
 We use:
 

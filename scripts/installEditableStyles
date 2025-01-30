@@ -1,0 +1,14 @@
+#!/bin/sh
+
+version=0.1.0
+
+dataDir=$HOME/.local/share/typst/packages/local
+papersDir=$dataDir/lpit-publisher-papers
+curDir=$(pwd)
+
+#rm -rf $papersDir
+mkdir -p $papersDir
+
+#cp -R styles/papers/* $papersDir/$version
+ln -fs $curDir/styles/papers $papersDir/$version
+
