@@ -3,10 +3,10 @@
 # for configuration we will use TOML
 # we will read the Typst MetaData as JSON strings.
 
-# This python script walks through (sub)directories looking for git
-# managed directories. Once a directory is found which is managed by git,
-# it reports the current status of the directory and whether or not the
-# default "remote" is up to date
+# This python script walks through a list of Typst Publisher documents
+# collecting metadata for the publisher. The resulting metadata is stored
+# in the `base` directory in the `metadata` subdirectory. This metadata
+# can then be used by the publisher to maintain various tables.
 
 # The asyncio worker pattern is based on:
 # https://stackoverflow.com/a/63977974
@@ -14,29 +14,23 @@
 # https://docs.python.org/3/library/asyncio-queue.html#asyncio-queues
 
 import asyncio
+import json
 import os
 from pathlib import Path
-import re
+# import re
+import sys
 import time
-
-######################################################################
-# regular expressions
-
-remoteFetchErrorARegExp = re.compile(r"error: Could not fetch origin")
-remoteFetchErrorBRegExp = re.compile(r"ERROR: Repository not found")
-gitStatusErrorARegExp   = re.compile(r"nothing to commit\, working .* clean")
-gitStatusErrorB1RegExp  = re.compile(r"Your branch")
-gitStatusErrorB2RegExp  = re.compile(r"is up.to.date")
+import tomllib
 
 ######################################################################
 # check a single repo
 
 async def runShellCmdIn(aCmd, aDir) :
   aProc = await asyncio.create_subprocess_shell(
-      aCmd,
-      stdout=asyncio.subprocess.PIPE,
-      stderr=asyncio.subprocess.PIPE,
-      cwd=str(aDir)
+    aCmd,
+    stdout=asyncio.subprocess.PIPE,
+    stderr=asyncio.subprocess.PIPE,
+    cwd=str(aDir)
   )
 
   aProcStdout, aProcStderr = await aProc.communicate()
@@ -45,136 +39,126 @@ async def runShellCmdIn(aCmd, aDir) :
     aProcStderr.decode(encoding="utf-8"),
   )
 
-async def checkARepo(workerId, repoQueue, repoResults) :
-  while 0 < repoQueue.qsize() :
-    aRepo = await repoQueue.get()
+async def getDocumentMetadata(workerId, docQueue, metadata) :
+  while 0 < docQueue.qsize() :
+    aDoc = await docQueue.get()
     try :
-      headFile = aRepo / 'HEAD'
-      head = headFile.read_text(encoding='utf-8').split()
-      if 1 < len(head) :
-        head = head[1].split('/').pop()
-      else :
-        head = head[0]
 
-      aRepo = aRepo.parent
-      print(f"({workerId})<{repoQueue.qsize()}>[{head}]  {aRepo}")
+      # EVENTUALLY we want to read all (sub)typst documents looking for
+      # `#import` or `#include` statements. This will allow us to cache
+      # the metadata results based upon included file modification times.
+      # If none of the included files have changed, then we do not need to
+      # re-collect the metadata.
 
-      fetchUrlStdout, fetchUrlStderr = await runShellCmdIn(
-        "git remote show origin | grep Fetch",
-        aRepo
+      rootDir      = aDoc.parent
+      docFileName = aDoc.name
+      print(f"({workerId})<{docQueue.qsize()}>  {rootDir} {docFileName}")
+
+      typstStdout, typstStderr = await runShellCmdIn(
+        f"typst query --input metadata=1 {docFileName} \"<lpitMetaData>\"",
+        rootDir
       )
 
-      remoteUpdateStdout, remoteUpdateStderr = await runShellCmdIn(
-        "git remote update",
-        aRepo
-      )
+      # errorReport = None
+      # if remoteFetchErrorARegExp.search(remoteUpdateStdout) :
+      #   errorReport = remoteUpdateStdout.strip()
+      # if remoteFetchErrorBRegExp.search(remoteUpdateStderr) :
+      #   errorReport = remoteUpdateStderr.strip()
+      # elif not gitStatusErrorARegExp.search(gitStatusStdout) :
+      #   errorReport = gitStatusStdout.strip()
+      # elif gitStatusErrorB1RegExp.search(gitStatusStdout) :
+      #   if not gitStatusErrorB2RegExp.search(gitStatusStdout) :
+      #     errorReport = gitStatusStdout.strip()
 
-      gitStatusStdout, gitStatusStderr = await runShellCmdIn(
-        "git status",
-        aRepo
-      )
-
-      errorReport = None
-      if remoteFetchErrorARegExp.search(remoteUpdateStdout) :
-        errorReport = remoteUpdateStdout.strip()
-      if remoteFetchErrorBRegExp.search(remoteUpdateStderr) :
-        errorReport = remoteUpdateStderr.strip()
-      elif not gitStatusErrorARegExp.search(gitStatusStdout) :
-        errorReport = gitStatusStdout.strip()
-      elif gitStatusErrorB1RegExp.search(gitStatusStdout) :
-        if not gitStatusErrorB2RegExp.search(gitStatusStdout) :
-          errorReport = gitStatusStdout.strip()
-
-      aRepoResults = {
-        'repo'           : str(aRepo),
-        'head'           : head,
-        'errorReport'    : errorReport,
-        'fetchUrlStdout' : fetchUrlStdout.strip(),
+      typstResults = {
+        'rootDir' : str(rootDir),
+        'doc'     : str(docFileName),
+        'stdout'  : typstStdout,
+        'stderr'  : typstStderr
       }
-      repoResults[str(aRepo)] = aRepoResults
+      metadata[str(aDoc)] = typstResults
     except Exception as err :
       print(repr(err))
 
-    repoQueue.task_done()
+    docQueue.task_done()
 
-async def checkRepoList(someRepos, repoResults) :
-  repoQueue   = asyncio.Queue()
+async def collectDocumentMetadata(documents, metadata) :
+  docQueue   = asyncio.Queue()
 
-  for aRepo in someRepos :
-    await repoQueue.put(aRepo)
+  for aDoc in documents :
+    await docQueue.put(aDoc)
 
   workers = []
-  for i in range(50) :
+  for i in range(5) :
     aWorker = asyncio.create_task(
-      checkARepo(i, repoQueue, repoResults)
+      getDocumentMetadata(i, docQueue, metadata)
     )
     workers.append(aWorker)
 
   await asyncio.gather(*workers, return_exceptions=True)
+
+def usage() :
+  print(f"""
+  usage: {sys.argv[0]} [options] <collectionToml>
+
+  where <collectionToml> is the TOML file describing the ordered
+  collection of documents to be published.
+
+  Options:
+    -h, --help     Print this help text
+    -v, --verbose  Be verbose
+
+""")
+  sys.exit(1)
 
 ######################################################################
 # load the configuration
 
 os.system("clear")
 
-print("Checking git repositories")
+if len(sys.argv) < 2 :
+  usage()
 
-# os.system("useKeyStandard")
-os.system("useKeyGit")
+tomlPath = Path(sys.argv[-1], 'lpitPublisher.toml')
 
-gitCheckerDir = Path.home() / '.gitChecker'
-gitCheckerConfig = gitCheckerDir / 'config.yaml'
-if not gitCheckerDir.exists() :
-  gitCheckerDir.mkdir()
-  gitCheckerConfig.write_text("""dirs:
-  -  '.'
-""", encoding='utf-8')
+print(f"Collecting lpit published parts from {tomlPath}")
 
-config = yaml.safe_load(gitCheckerConfig.read_text(encoding='utf-8'))
+config = tomllib.loads(tomlPath.read_text(encoding='utf-8'))
 print("")
 print("------------------------------------------------------------")
 print("Configuration:")
 print("-------")
-print(yaml.dump(config))
+print(json.dumps(config, sort_keys=True, indent=2))
 print("------------------------------------------------------------")
 print("")
 
 ######################################################################
-# find repositories
+# find typst documents
 
 startTime = time.time()
-print("started: {}".format(time.ctime(startTime)))
+print(f"started: {time.ctime(startTime)}")
 print("")
-gitDirs = list(config['dirs'])
-gitDirs.sort()
-repos = []
-for aGitDir in gitDirs :
-  aGitDir = Path(aGitDir)
-  print(f"collecting git repositories in: {aGitDir}")
-  repos.extend(list(aGitDir.glob("**/.git")))
-
+collections = list(config['collection'])
+documents = []
+for docInfo in collections :
+  aDocPath = Path(docInfo['path'], docInfo['doc'])
+  print(f"collecting Publisher metadata from: {aDocPath}")
+  documents.append(aDocPath)
 print("")
 
-repos.sort()
-repoResults = { }
-asyncio.run(checkRepoList(repos, repoResults))
-
-reposList = list(repoResults.keys())
-reposList.sort()
-for theRepo in reposList :
-  theRepoResults = repoResults[theRepo]
-  if theRepoResults['errorReport'] :
-    print("\n------------------------------------------------------------")
-    print("[{}] {}".format(
-      theRepoResults['head'],
-      theRepoResults['repo'],
-    ))
-    print(repoResults[theRepo]['errorReport'])
+metadata = {}
+asyncio.run(collectDocumentMetadata(documents, metadata))
 
 print("")
+
+for someMetaData in metadata.keys() :
+  print(json.dumps(metadata[someMetaData], indent=2))
+
+print("")
+
 endTime = time.time()
-print("finished: {}".format(time.ctime(endTime)))
-print("Total:    {} seconds".format(
+print(f"finished: {time.ctime(endTime)}")
+print( "Total:    {} seconds".format(
   format(endTime - startTime, ".2f")
 ))
 print("")

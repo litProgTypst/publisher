@@ -53,6 +53,7 @@
     theData.shortTitle = shortTitle
     theData.longTitle = longTitle
     theData.abstract = query(<abstract>)
+    theData.inputs   = sys.inputs
     }
     [ #metadata(theData) <lpitMetaData> ]
   }
