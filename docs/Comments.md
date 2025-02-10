@@ -21,7 +21,14 @@ moderate our document comments.
 
   - version control the comments (as text)
 
+    - We can export the comments as JSON and then explode them (using
+      python) into each documents repository.
+
   - recover the database if it gets corrupted
+
+    - The exported comments as JSON can be re-imported if the database
+      gets corrupted. We *could* even re-assemble the exploded comments
+      into the corresponding JSON and re-import that.
 
 ## Integrating comentario comments into documents
 
