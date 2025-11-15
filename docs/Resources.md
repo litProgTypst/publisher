@@ -5,8 +5,9 @@ Consider using
 [stepup-core](https://reproducible-reporting.github.io/stepup-core/stable/)
 for managing the build of complex multi-part documents.
 
-Consider using [cookiicutter](https://www.cookiecutter.io/) to create new
-document templates.
+Consider using [cookiicutter](https://www.cookiecutter.io/) or
+[copier](https://copier.readthedocs.io/en/stable/) to create new document
+templates.
 
 Consider using [direnv](https://direnv.net/) or
 [asdf-direnv](https://github.com/asdf-community/asdf-direnv) to manage
