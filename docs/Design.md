@@ -1,87 +1,78 @@
-# Design
+# Overall Design
 
-This Publisher was originally inspired by the [Gerby
-project](https://gerby-project.github.io/).
+The publisher has a number of phases:
 
-The key task of the publisher is to maintain a global overview across a
-number of loosely related documents written in
-[Typst](https://typst.app/).
+1. Identification of all documents.
+2. Collection of meta-data (Typst-Query) from each document.
+3. Creation of the static website using the collected meta-data.
 
-The global overviews we provide are:
+Since most documents will not have changed from one run of the publisher
+to another, to help ensure we do only the work required, we keep a cache
+of the meta-data, as well as a hash of each `*.typ` document and its last
+modification time.
 
-- Table of Contents
-  - with Abstracts
-- Table of Figures
-- Table of Tables
-- Table of Theorems/Lemmas/Definitions/Proofs
-- Table of Code
-- Glossary
-- Cross-references
-- Index
-- bibliography/References
+We can then check if a given document requires re-collection of the
+meta-data before re-running the compute intensive typst-query, typst-html,
+typst-pdf commands.
 
-## Details
+We can also use the accumulated cache of meta-data to generate the static
+website.
 
-We use:
+## Configuration and cache
 
-1. `typst query` ([see](https://typst.app/docs/reference/introspection/))
-   will extract cross-references from each individual document.
+The **configuration** will be contained in a `~/.config/lpitPublisher`
+directory. This configuration *should* be version controlled.
 
-2. Cross references will consist of document-id, internal-reference-id,
-   and version-number. The version-number will be the git tag and/or git
-   version short code. Only git tags will be permanent on the website, git
-   version short codes will be merely drafts.
+The **cache** will be contained in a `~/.var/cache/lpitPublisher`
+directory. This cache need not be version controlled, as it can and
+probably will be periodically recreated from the existing documents.
 
-   - these document-id/internal-reference-id/version-number combinations
-     will provide *permanent* *external* links into the published documents.
+The cache will contain:
 
-3. Each document-id/internal-reference-id combination will have a short
-   glossary description, and will have back links to all locations in the
-   various documents. These descriptions and back-links will act as a
-   global Glossary and Index.
+1. A YAML file containing all collected file names, hashes and last
+   modification times.
 
-4. `typst query` will extract document structure which will be used to
-   maintain a global Table of Contents.
+2. A meta-data directory containing the typst-query meta-data for each
+   *document* as a JSON file. (We use JSON as it is the output of the
+   typst-query command).
 
-5. `typst` in HTML mode ([currently under active
-   development](https://github.com/typst/typst/issues/5512) ([issue
-   721](https://github.com/typst/typst/issues/721)) will be used to
-   publish HTML versions of each document to be placed on the website
-   (together with the pdf for download).
+3. An html directory containing a sub-directory of the html for each
+   identified document.
 
-6. [Comentario](https://comentario.app/en/) will be used to provide
-   moderated comments associated with each cross-reference and/or document
-   section. We will consider using one or more of the associated
-   extensions to help screen/moderate the comments.
+4. A PDF directory containing the PDF for each identified document.
 
-   - we will try to use [OrcID OAuth sign
-     in](https://info.orcid.org/documentation/integration-guide/orcid-oauth-sign-in-guidelines/)
-     to provide authentication for commentors.
+In order to keep all of this data separate, each identified document
+**MUST** be given a **UNIQUE** identifier.
 
-7. Cross references, glossary and table of contents will be extracted and
-   built using a python script (which might include an internal website to
-   maintain the glossary descriptions). The resulting glossary and table
-   of contents will be auto-generated to provide a static website.
+## Identification phase
 
-8. Non-Typst document pages will be maintained using the (python based)
-   [Nikola](https://getnikola.com/) static website generator.
+The configuration **will** contain a list of directories which will be
+checked for LPiT documents.
 
-9. We may need to write a python script which modifies the HTML output of
-   Typst to suit our needs. For example we may need to inject HTML code to
-   be able to place the comments in the correct location in the documents.
+Each sub-directory of these listed directories which (recursively) contain
+`*.typ` documents, will be considered LPiT documents to be *included* in
+the publisher's cache and (eventual) output.
 
+## Collection phase
 
-## Resources
+For each identified LPiT document, which requires re-collection, the
+publisher will run typst-query, typst-html and/or typst-pdf as required.
 
-See:
+The output of the typst-query will be added to the meta-data cache.
 
-- [Justin Pombrio - Typst as a
-  Language](https://justinpombrio.net/2024/11/30/typst.html)
+The output of the typst-html will be added to an html directory dedicated
+to the given document.
 
-- [Typst Basics - Typst Examples
-  Book](https://sitandr.github.io/typst-examples-book/book/basics/)
+The output of the typst-pdf will be added to the collection of PDF documents.
 
-- [Myriad-Dreamin/tinymist: Tinymist [ˈtaɪni mɪst] is an integrated
-  language service for Typst
-  [taɪpst].](https://github.com/Myriad-Dreamin/tinymist)
+## Generation phase
+
+The cached meta-data, collected during repeated collection phases, will be
+used to stitch together a coherent website combining all of the identified
+LPiT documents in *one* (static) website.
+
+The configuration **will** contain an ordered list of the document
+identifiers, in order to provide an order to the website's contents. Any
+document which is not listed in this order, will be appended in
+*alphabetical* order by identifier.
 
