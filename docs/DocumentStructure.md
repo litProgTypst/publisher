@@ -8,7 +8,7 @@ All LPiT documents will have:
    2. Document type
    3. Short title
    4. Long title
-   5. Authors
+   5. Authors (given, family, prefix, suffix)
    6. Abstract (in Markdown/KaTeX format; this *may* diverge from the
       abstract in the document)
    
