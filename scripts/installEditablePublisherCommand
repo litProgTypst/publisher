@@ -25,6 +25,8 @@ CMD_SCRIPT
 
 installScript lpitCollector
 installScript lpitGenerator
+installScript lpitDocumentInit
+installScript lpitStylesUpdater
 
 echo ""
 echo "The editable publisher commands have been created"
