@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+
+# This python script updates the latest styles with any recent changes
+
+import tomllib
+import os
+from pathlib import Path
+import yaml
+
+print("Updating styles\n")
+
+stylesDir = Path('styles')
+dataDir = Path('~/.local/share/typst/packages/local').expanduser()
+
+for aStyleTomlPath in stylesDir.glob('**/typst.toml') :
+  aStyleDir = aStyleTomlPath.parent
+  aStyleDef = tomllib.loads(aStyleTomlPath.read_text())['package']
+  print(f"Working on: {aStyleDir} ({aStyleDef['version']})")
+  
+  papersDir = dataDir / aStyleDef['name'] / str(aStyleDef['version'])
+
+  os.system(f"mkdir -p {papersDir}")
+  os.system(f"cp {aStyleDir}/* {papersDir}")
+  
+

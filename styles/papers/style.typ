@@ -1,9 +1,9 @@
 
 
-#import "@preview/cetz:0.3.2" as cetz 
-#import "@preview/fletcher:0.5.4" as fletcher: diagram, node, edge
-#import "@preview/codly:1.2.0" : *
-#import "@preview/codly-languages:0.1.1": *
+#import "@preview/cetz:0.4.2" as cetz 
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
+#import "@preview/codly:1.3.0" : *
+#import "@preview/codly-languages:0.1.10": *
 
 #show: codly-init.with()
 #codly(languages: codly-languages)
