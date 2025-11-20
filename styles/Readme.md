@@ -66,3 +66,18 @@ rather than simply adapting one of these existing pacakges.
 - [npikall/rubber-article: A simple template recreating the look of the
   classic LaTeX article.](https://github.com/npikall/rubber-article)
 
+### Using JSON/YAML 
+
+It seems (but I can not find the definitive statement) that the `json` and
+`yaml` functions ONLY work in the top level document files. That is these
+two functions throw errors when used inside a (local) typst package.
+
+SO to load and make use of the `lpit.yaml` description of a document, we
+must put the actual `yaml` call to load the file inside our base
+document's template, wrapped in a call to a method which makes use of the
+data and is defined in our (local) LPiT package.
+
+Note that the `yaml.encode` *can* be used inside a (local) Typst Package.
+I suspect the `read` which is called by `yaml` is the method which can not
+be used inside a (local) Typst Package.
+

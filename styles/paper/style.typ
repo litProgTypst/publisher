@@ -33,6 +33,8 @@
   }
 }
 
+
+
 #let lpitDocument(
   docId,
   shortTitle: [],
@@ -64,4 +66,10 @@
   #align(center, body) #label("abstract")
 ]
 
-
+#let setupDoc(lpitDef) = {
+  lpitDocument(lpitDef.doc.id,
+    shortTitle: lpitDef.title.short,
+    longTitle: lpitDef.title.long
+  )
+  // [ #yaml.encode(lpitDef) ]
+}

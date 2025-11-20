@@ -20,6 +20,6 @@ for aStyleTomlPath in stylesDir.glob('**/typst.toml') :
   papersDir = dataDir / aStyleDef['name'] / str(aStyleDef['version'])
 
   os.system(f"mkdir -p {papersDir}")
-  os.system(f"cp {aStyleDir}/* {papersDir}")
+  os.system(f"cp -r {aStyleDir}/* {papersDir}")
   
 

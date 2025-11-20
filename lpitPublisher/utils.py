@@ -31,6 +31,9 @@ def loadLpitYaml() :
   lpitDef = {}
   try :
     lpitDef = yaml.safe_load(lpitYamlPath.read_text())
+
+    if 'packages' not in lpitDef : lpitDef['packages'] = []
+
     # if lpitDef :
     #   print(yaml.dump(lpitDef))
   except FileNotFoundError :
