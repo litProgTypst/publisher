@@ -46,7 +46,7 @@ class Config(object) :
       die("No document directories specified... nothing to do!")
     docDirs = self.config['documentDirs']
 
-    if len(docDirs) < 1 : 
+    if len(docDirs) < 1 :
       die("No document directories specified... nothing to do!")
 
     for aDir in docDirs :
@@ -55,7 +55,7 @@ class Config(object) :
       if not aDirPath.exists() :
         aDirPath.mkdir(parents=True, exist_ok=True)
 
-    cachePath = Path('~/.var/cache/lpitPublisher')
+    cachePath = Path('~/.cache/lpitPublisher')
     if 'cacheDir' in self.config :
       cachePath = Path(self.config['cacheDir'])
     cachePath = cachePath.expanduser()

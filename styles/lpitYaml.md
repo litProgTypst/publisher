@@ -4,6 +4,7 @@ This YAML file is a dictionary containing the keys:
 
  - **doc** contains the subkeys:
    - **id** provides the unique document id.
+   - **name** provides the name of the base document file.
    - **type** declares the *type* of document.
 
  - **title** contains the subkeys:
@@ -37,4 +38,10 @@ This YAML file is a dictionary containing the keys:
   publisher. This abstract will tend to use either MathJaX or KaTeX
   notation for Mathematics, instead of the Typst notaion. This means that
   this abstract and the one included in the document *may* differ.
+
+## Local version
+
+If a file `lpitYaml.jinja2` is found in the config directory (by default
+`~/.config/lpitPublisher`) then it will be used as the Jinja2 template for
+the new `lpit.yaml` file.
 

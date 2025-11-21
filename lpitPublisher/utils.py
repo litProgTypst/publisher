@@ -4,30 +4,19 @@ import sys
 import tomllib
 import yaml
 
-from jinja2 import Template
+def die(mesg) :
+  print(mesg)
+  sys.exit(1)
 
-lpitYamlPath = Path('lpit.yaml')
+localLpitYamlPath = Path('lpit.yaml')
 stylesDir = Path(__file__).parent.parent / 'styles'
-lpitYamlTemplate = stylesDir / 'lpitYaml.jinja2'
 
-def createLpitYamlFile(lpitYamlPath) :
-  try :
-    print("Creating a new LPiT.yaml file")
-    templateStr = lpitYamlTemplate.read_text()
-    template    = Template(templateStr)
-    lpitYamlStr = template.render()
-    lpitYamlPath.write_text(lpitYamlStr)
-    print("""
+def loadLpitYaml(docDir=None) :
+  lpitYamlPath = Path(str(localLpitYamlPath))
+  if docDir :
+    lpitYamlPath = docDir / str(localLpitYamlPath)
+  lpitYamlPath = lpitYamlPath.expanduser()
 
-      Now PLEASE update the values in this new `lpit.yaml` file to
-      represent your new document.
-
-    """)
-  except Exception as err :
-    print("Could not create the document's lpit.yaml file")
-    print(repr(err))
-
-def loadLpitYaml() :
   lpitDef = {}
   try :
     lpitDef = yaml.safe_load(lpitYamlPath.read_text())
@@ -37,12 +26,23 @@ def loadLpitYaml() :
     # if lpitDef :
     #   print(yaml.dump(lpitDef))
   except FileNotFoundError :
-    createLpitYamlFile(lpitYamlPath)
-    sys.exit(0)
+    return {}
   except Exception as err :
     print("Could not load the document's lpit.yaml file")
     print(repr(err))
     sys.exit(1)
+
+  if 'doc' not in lpitDef :
+    return lpitDef
+
+  lpitDoc = lpitDef['doc']
+  if 'name' not in lpitDoc :
+    if 'id' not in lpitDoc :
+      die("No doc:id specified in the `lpit.yaml` file")
+    lpitDoc['name'] = lpitDoc['id']
+    if '-' in lpitDoc['name'] :
+      lpitDoc['name'] = lpitDoc['name'].split('-')[1]
+
   return lpitDef
 
 def getStyleDir(lpitDef) :
