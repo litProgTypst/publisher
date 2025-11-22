@@ -65,6 +65,9 @@ class Config(object) :
     self.htmlCache     = cachePath / 'html'
     if not self.htmlCache.exists() :
       self.htmlCache.mkdir(parents=True, exist_ok=True)
+    self.pdfCache = cachePath / 'pdf'
+    if not self.pdfCache.exists() :
+      self.pdfCache.mkdir(parents=True, exist_ok=True)
     self.metaDataCache = cachePath / 'metaData'
     if not self.metaDataCache.exists() :
       self.metaDataCache.mkdir(parents=True, exist_ok=True)

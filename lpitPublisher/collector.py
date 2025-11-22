@@ -43,27 +43,40 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
       docFileName = aDoc.name
       print(f"({workerId})<{docQueue.qsize()}>  {rootDir} {docFileName}")
 
-      typstStdout, typstStderr = await runShellCmdIn(
-        f"typst query --input metadata=1 {docFileName} \"<lpitMetaData>\"",
+      queryStdout, queryStderr = await runShellCmdIn(
+        f"typst query --format yaml --input metadata=1 {docFileName} \"<lpitMetaData>\"",  # noqa
         rootDir
       )
 
-      # errorReport = None
-      # if remoteFetchErrorARegExp.search(remoteUpdateStdout) :
-      #   errorReport = remoteUpdateStdout.strip()
-      # if remoteFetchErrorBRegExp.search(remoteUpdateStderr) :
-      #   errorReport = remoteUpdateStderr.strip()
-      # elif not gitStatusErrorARegExp.search(gitStatusStdout) :
-      #   errorReport = gitStatusStdout.strip()
-      # elif gitStatusErrorB1RegExp.search(gitStatusStdout) :
-      #   if not gitStatusErrorB2RegExp.search(gitStatusStdout) :
-      #     errorReport = gitStatusStdout.strip()
+      if queryStdout :
+        queryPath = config.metaDataCache / docFileName.replace('.typ', '.yaml')
+        queryPath.write_text(queryStdout)
+
+      pdfStdout, pdfStderr = await runShellCmdIn(
+        f"typst compile --format pdf {docFileName} {config.pdfCache}/{docFileName.replace('.typ','.pdf')}",  # noqa
+        rootDir
+      )
+
+      htmlStdout, htmlStderr = await runShellCmdIn(
+        f"typst compile --format html --features html {docFileName} {config.htmlCache}/{docFileName.replace('.typ','.html')}",  # noqa
+        rootDir
+      )
 
       typstResults = {
         'rootDir' : str(rootDir),
         'doc'     : str(docFileName),
-        'stdout'  : typstStdout,
-        'stderr'  : typstStderr
+        'query'   : {
+          'stdout'  : queryStdout,
+          'stderr'  : queryStderr
+        },
+        'pdf' : {
+          'stdout'  : pdfStdout,
+          'stderr'  : pdfStderr
+        },
+        'html' : {
+          'stdout'  : htmlStdout,
+          'stderr'  : htmlStderr
+        },
       }
       metadata[str(aDoc)] = typstResults
     except Exception as err :
@@ -113,6 +126,7 @@ def cli() :
   config = Config()
   args = parseArgs()
   config.loadConfig(args)
+  config.print()
 
   documents = []
   for aDir in config['documentDirs'] :
