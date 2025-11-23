@@ -68,6 +68,9 @@ class Config(object) :
     self.pdfCache = cachePath / 'pdf'
     if not self.pdfCache.exists() :
       self.pdfCache.mkdir(parents=True, exist_ok=True)
+    self.svgCache = cachePath / 'svg'
+    if not self.svgCache.exists() :
+      self.svgCache.mkdir(parents=True, exist_ok=True)
     self.metaDataCache = cachePath / 'metaData'
     if not self.metaDataCache.exists() :
       self.metaDataCache.mkdir(parents=True, exist_ok=True)
@@ -93,6 +96,9 @@ class Config(object) :
 
     if 'monitor' not in self.config :
       self.config['monitor'] = ['*.typ' ]
+
+    if 'formats' not in self.config :
+      self.config['formats'] = [ 'metadata', 'html', 'svg', 'pdf' ]
 
     self.checkDirs()
 

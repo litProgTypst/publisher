@@ -44,41 +44,61 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
       docFileName = aDoc.name
       print(f"({workerId})<{docQueue.qsize()}>  {rootDir} {docFileName}")
 
-      queryStdout, queryStderr = await runShellCmdIn(
-        f"typst query --format yaml --input metadata=1 {docFileName} \"<lpitMetaData>\"",  # noqa
-        rootDir
-      )
-
-      if queryStdout :
-        queryPath = config.metaDataCache / docFileName.replace('.typ', '.yaml')
-        queryPath.write_text(queryStdout)
-
-      pdfStdout, pdfStderr = await runShellCmdIn(
-        f"typst compile --format pdf {docFileName} {config.pdfCache}/{docFileName.replace('.typ','.pdf')}",  # noqa
-        rootDir
-      )
-
-      htmlStdout, htmlStderr = await runShellCmdIn(
-        f"typst compile --format html --features html {docFileName} {config.htmlCache}/{docFileName.replace('.typ','.html')}",  # noqa
-        rootDir
-      )
-
       typstResults = {
         'rootDir' : str(rootDir),
         'doc'     : str(docFileName),
-        'query'   : {
+      }
+
+      if 'metadata' in config['formats'] :
+        queryStdout, queryStderr = await runShellCmdIn(
+          f"typst query --format yaml --input metadata=1 {docFileName} \"<lpitMetaData>\"",  # noqa
+          rootDir
+        )
+
+        if queryStdout :
+          queryPath = config.metaDataCache / docFileName.replace('.typ', '.yaml')  # noqa
+          queryPath.write_text(queryStdout)
+
+        typstResults['query'] = {
           'stdout'  : queryStdout,
           'stderr'  : queryStderr
-        },
-        'pdf' : {
+        }
+
+      if 'pdf' in config['formats'] :
+        pdfStdout, pdfStderr = await runShellCmdIn(
+          f"typst compile --format pdf {docFileName} {config.pdfCache}/{docFileName.replace('.typ','.pdf')}",  # noqa
+          rootDir
+        )
+
+        typstResults['pdf'] = {
           'stdout'  : pdfStdout,
           'stderr'  : pdfStderr
-        },
-        'html' : {
+        }
+
+      if 'svg' in config['formats'] :
+        svgDocDir = config.svgCache / docFileName.replace('.typ','')
+        svgDocDir.mkdir(parents=True, exist_ok=True)
+        svgStdout, svgStderr = await runShellCmdIn(
+          f"typst compile --format svg {docFileName} {svgDocDir}/page{{0p}}.svg",  # noqa
+          rootDir
+        )
+
+        typstResults['svg'] = {
+          'stdout'  : svgStdout,
+          'stderr'  : svgStderr
+        }
+
+      if 'html' in config['formats'] :
+        htmlStdout, htmlStderr = await runShellCmdIn(
+          f"typst compile --format html --features html {docFileName} {config.htmlCache}/{docFileName.replace('.typ','.html')}",  # noqa
+          rootDir
+        )
+
+        typstResults['html'] = {
           'stdout'  : htmlStdout,
           'stderr'  : htmlStderr
-        },
-      }
+        }
+
       metadata[str(aDoc)] = typstResults
     except Exception as err :
       print(repr(err))
