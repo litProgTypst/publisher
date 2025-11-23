@@ -4,6 +4,7 @@ import asyncio
 import json
 import os
 from pathlib import Path
+import shutil
 # import sys
 import time
 # import yaml
@@ -105,6 +106,44 @@ async def collectDocumentMetadata(documents, config, metadata) :
   await asyncio.gather(*workers, return_exceptions=True)
 
 ######################################################################
+# check to see if a LPiT document has changed.
+#
+# We use a fairly crude but fast diff of
+# past and present sha256sum files.
+
+def documentFilesChanged(docPath, docName, config) :
+  filesToCheck = []
+
+  if not config['monitor'] : return True
+
+  for aFileType in config['monitor'] :
+    for aFile in docPath.rglob(aFileType) :
+      filesToCheck.append(str(aFile))
+
+  if not filesToCheck : return True
+
+  filesToCheck = sorted(filesToCheck)
+
+  newPath = Path('/tmp') / docName
+  newFilesPath = newPath.with_suffix('.files')
+  newSumsPath  = newPath.with_suffix('.sums')
+
+  cachedPath     = config.shaSumsCache / docName
+  cachedSumsPath = cachedPath.with_suffix('.sums')
+
+  newFilesPath.write_text('\n'.join(filesToCheck))
+  os.system(f"xargs -a {newFilesPath} sha256sum > {newSumsPath}")
+
+  result = 1
+  if cachedSumsPath.exists() :
+    result = os.system(f"diff {cachedSumsPath} {newSumsPath}")
+
+  shutil.move(newSumsPath, cachedSumsPath)
+
+  if result != 0 : return True
+  return False
+
+######################################################################
 # Provide the command line interface
 
 def parseArgs() :
@@ -133,14 +172,19 @@ def cli() :
     aDir = Path(aDir).expanduser()
     print(f"Looking for LPiT documents in {aDir}")
     for aLpitYaml in aDir.rglob("lpit.yaml") :
-      docDir = aLpitYaml.parent
       print(f"  found: {aLpitYaml}")
+
+      docDir = aLpitYaml.parent
+
       lpitDef = loadLpitYaml(docDir=docDir)
       if not lpitDef : continue
 
       docName = lpitDef['doc']['name']
       if not docName.endswith('.typ') :
         docName = docName + '.typ'
+
+      if not documentFilesChanged(docDir, docName, config) : continue
+
       documents.append(docDir / docName)
 
   startTime = time.time()

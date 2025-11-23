@@ -71,6 +71,9 @@ class Config(object) :
     self.metaDataCache = cachePath / 'metaData'
     if not self.metaDataCache.exists() :
       self.metaDataCache.mkdir(parents=True, exist_ok=True)
+    self.shaSumsCache = cachePath / 'sha256sums'
+    if not self.shaSumsCache.exists() :
+      self.shaSumsCache.mkdir(parents=True, exist_ok=True)
 
   def loadConfig(self, args, verbose=False) :
     configPath = Path(args['config']).expanduser()
@@ -87,6 +90,9 @@ class Config(object) :
 
     if 'verbose' not in self.config :
       self.config['verbose'] = verbose
+
+    if 'monitor' not in self.config :
+      self.config['monitor'] = ['*.typ' ]
 
     self.checkDirs()
 
