@@ -74,6 +74,9 @@ class Config(object) :
     self.metaDataCache = cachePath / 'metaData'
     if not self.metaDataCache.exists() :
       self.metaDataCache.mkdir(parents=True, exist_ok=True)
+    self.lpitCache = cachePath / 'lpit'
+    if not self.lpitCache.exists() :
+      self.lpitCache.mkdir(parents=True, exist_ok=True)
     self.shaSumsCache = cachePath / 'sha256sums'
     if not self.shaSumsCache.exists() :
       self.shaSumsCache.mkdir(parents=True, exist_ok=True)

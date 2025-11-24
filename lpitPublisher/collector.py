@@ -185,9 +185,9 @@ def cli() :
   config = Config()
   args = parseArgs()
   config.loadConfig(args)
-  config.print()
 
   documents = []
+
   for aDir in config['documentDirs'] :
     aDir = Path(aDir).expanduser()
     print(f"Looking for LPiT documents in {aDir}")
@@ -206,9 +206,10 @@ def cli() :
       if not documentFilesChanged(docDir, docName, config) : continue
 
       documents.append(docDir / docName)
+      shutil.copy(aLpitYaml, config.lpitCache / (docName.replace('.typ', '.yaml')))  # noqa
 
   startTime = time.time()
-  print(f"started: {time.ctime(startTime)}")
+  print(f"\nstarted: {time.ctime(startTime)}")
 
   print("")
 
@@ -217,8 +218,9 @@ def cli() :
 
   print("")
 
-  for someMetaData in metadata.keys() :
-    print(json.dumps(metadata[someMetaData], indent=2))
+  if config['verbose'] :
+    for someMetaData in metadata.keys() :
+      print(json.dumps(metadata[someMetaData], indent=2))
 
   print("")
 
