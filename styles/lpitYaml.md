@@ -13,6 +13,9 @@ This YAML file is a dictionary containing the keys:
    - **long** is a longer title to be used
      on the title page
 
+ - **gitHub** is the (external) https link to the gitHub repository
+   associated with this document.
+
  - **authors** is a list of dictionaries one for each author.
    Each author's dictionary contains the keys:
    - **given** is the given name of the author

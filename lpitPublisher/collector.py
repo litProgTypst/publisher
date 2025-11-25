@@ -206,7 +206,12 @@ def cli() :
       if not documentFilesChanged(docDir, docName, config) : continue
 
       documents.append(docDir / docName)
+
       shutil.copy(aLpitYaml, config.lpitCache / (docName.replace('.typ', '.yaml')))  # noqa
+
+      markdownPath = config.markdownCache / (docName.replace('.typ', ''))
+      markdownPath.mkdir(parents=True, exist_ok=True)
+      os.system(f"cp {docDir}/*.md {markdownPath}")
 
   startTime = time.time()
   print(f"\nstarted: {time.ctime(startTime)}")

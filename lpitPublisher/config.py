@@ -61,10 +61,14 @@ class Config(object) :
     cachePath = cachePath.expanduser()
     if not cachePath.exists() :
       cachePath.mkdir(parents=True, exist_ok=True)
+    self.cacheDir = cachePath
     self.config['cacheDir'] = str(cachePath)
     self.htmlCache     = cachePath / 'html'
     if not self.htmlCache.exists() :
       self.htmlCache.mkdir(parents=True, exist_ok=True)
+    self.markdownCache = cachePath / 'markdown'
+    if not self.markdownCache.exists() :
+      self.markdownCache.mkdir(parents=True, exist_ok=True)
     self.pdfCache = cachePath / 'pdf'
     if not self.pdfCache.exists() :
       self.pdfCache.mkdir(parents=True, exist_ok=True)
