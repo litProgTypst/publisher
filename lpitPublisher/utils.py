@@ -34,6 +34,9 @@ def loadLpitYaml(docDir=None) :
     print(repr(err))
     sys.exit(1)
 
+  if 'docOrderPriority' not in lpitDef :
+    lpitDef['docOrderPriority'] = 0
+
   if 'doc' not in lpitDef :
     return lpitDef
 
@@ -69,6 +72,8 @@ def loadMetaData(config) :
     theDoc = aLpitPath.name.replace('.yaml','')
     if theDoc not in metaData : metaData[theDoc] = {}
     lpitDef = yaml.safe_load(aLpitPath.read_text())
+    if 'docOrderPriority' not in lpitDef :
+      lpitDef['docOrderPriority'] = 0
     if 'abstract' in lpitDef :
       lpitDef['abstract'] = markdown(lpitDef['abstract'])
     metaData[theDoc]['lpit'] = lpitDef
@@ -100,4 +105,21 @@ def loadMetaData(config) :
   if config['verbose'] : print(yaml.dump(metaData))
 
   return metaData
+
+def metaDataSortKey(anItem) :
+  # print(f" {anItem['lpit']['doc']['name']}: {anItem['lpit']['docOrderPriority']}")  # noqa
+  return float(anItem['lpit']['docOrderPriority'])
+
+def sortDocuments(metaData) :
+  docItems = []
+  for aKey in sorted(metaData.keys()) :
+    anItem = metaData[aKey]
+    anItem['key'] = aKey
+    docItems.append(anItem)
+
+  sortedDocNames = []
+  for anItem in sorted(docItems, key=metaDataSortKey, reverse=True) :
+    sortedDocNames.append(anItem['key'])
+
+  return sortedDocNames
 

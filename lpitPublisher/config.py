@@ -41,20 +41,7 @@ class Config(object) :
     print(yaml.dump(self.config))
     print("-------------------------------------------------")
 
-  def checkDirs(self) :
-    if 'documentDirs' not in self.config :
-      die("No document directories specified... nothing to do!")
-    docDirs = self.config['documentDirs']
-
-    if len(docDirs) < 1 :
-      die("No document directories specified... nothing to do!")
-
-    for aDir in docDirs :
-      # here be dragons!
-      aDirPath = Path(aDir).expanduser()
-      if not aDirPath.exists() :
-        aDirPath.mkdir(parents=True, exist_ok=True)
-
+  def addCacheDirs(self) :
     cachePath = Path('~/.cache/lpitPublisher')
     if 'cacheDir' in self.config :
       cachePath = Path(self.config['cacheDir'])
@@ -84,6 +71,23 @@ class Config(object) :
     self.shaSumsCache = cachePath / 'sha256sums'
     if not self.shaSumsCache.exists() :
       self.shaSumsCache.mkdir(parents=True, exist_ok=True)
+    self.webSiteCache = cachePath / 'webSite'
+    if not self.webSiteCache.exists() :
+      self.webSiteCache.mkdir(parents=True, exist_ok=True)
+
+  def checkDirs(self) :
+    if 'documentDirs' not in self.config :
+      die("No document directories specified... nothing to do!")
+    docDirs = self.config['documentDirs']
+
+    if len(docDirs) < 1 :
+      die("No document directories specified... nothing to do!")
+
+    for aDir in docDirs :
+      # here be dragons!
+      aDirPath = Path(aDir).expanduser()
+      if not aDirPath.exists() :
+        aDirPath.mkdir(parents=True, exist_ok=True)
 
   def loadConfig(self, args, verbose=False) :
     configPath = Path(args['config']).expanduser()
@@ -107,7 +111,11 @@ class Config(object) :
     if 'formats' not in self.config :
       self.config['formats'] = [ 'metadata', 'html', 'svg', 'pdf' ]
 
+    if 'webSiteName' not in self.config :
+      self.config['webSiteName'] = 'LPiT Documents'
+
     self.checkDirs()
+    self.addCacheDirs()
 
     if self.config['verbose'] : self.print()
 

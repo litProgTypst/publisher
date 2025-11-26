@@ -1,0 +1,45 @@
+--- a/viewer.html	2025-11-26 19:25:26.413748727 +0000
++++ b/viewer.html	2025-11-26 19:26:49.271264270 +0000
+@@ -27,6 +27,9 @@
+     <meta name="google" content="notranslate">
+     <title>PDF.js viewer</title>
+ 
++<!-- we add the AlpineJs CDN -->>
++<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
++
+ <!-- This snippet is used in production (included from viewer.html) -->
+ <link rel="resource" type="application/l10n" href="locale/locale.json">
+ <script src="../build/pdf.mjs" type="module"></script>
+@@ -34,6 +37,17 @@
+     <link rel="stylesheet" href="viewer.css">
+ 
+   <script src="viewer.mjs" type="module"></script>
++
++  <!-- A very simple javascript function to get the PDF document name -->
++  <script>
++    function lpitGetPdfName() {
++      let params = new URLSearchParams(document.location.search);
++      fileArray = params.get('file').split('/')
++      return fileArray[fileArray.length - 1]
++    }
++  </script>
++  <!-- for use in our own livery (below) -->
++
+   </head>
+ 
+   <body tabindex="0">
+@@ -147,6 +161,14 @@
+                     <span data-l10n-id="pdfjs-next-button-label"></span>
+                   </button>
+                 </div>
++                <!-- Add our own livery to the tool bar -->
++                <div class="toolbarHorizontalGroup"
++                  x-data="{ title: '' }"
++                  x-init="title = lpitGetPdfName()"
++                >
++                  <span><strong>XXXWEBSITENAMEXXX : <span x-text="title"></span></strong>&nbsp</span>
++                </div>
++                <!-- End of our own livery -->
+                 <div class="toolbarHorizontalGroup">
+                   <span class="loadingInput start toolbarHorizontalGroup">
+                     <input type="number" id="pageNumber" class="toolbarField" value="1" min="1" tabindex="0" data-l10n-id="pdfjs-page-input" autocomplete="off">

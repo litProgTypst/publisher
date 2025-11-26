@@ -21,3 +21,8 @@ zero-touch publishing.
 
 Consider integration with [OpenReview.net](https://openreview.net/).
 
+## Favicon
+
+- [Text to Favicon Generator - Create Custom Text Favicons | Free -
+  favicon.io](https://favicon.io/favicon-generator/)
+

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>Table of contents</title>
+{% endblock %}
+
+{% block header %}
+  <h1>Table of contents</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for aDoc in documentOrder %}
+{%   set aDocDef = metaData[aDoc] %}
+<li><div x-data="{ open : false}">
+    <span  @click="open = ! open">
+      <span style="font-family: monospace; font-size: xx-large">
+        <span x-show="open">-</span>
+        <span x-show="! open">+</span>
+      </span>
+    </span> <strong>{{aDoc}}</strong>
+    {% for aMD, aMDText in aDocDef.markdown.items() %}
+      <div x-data="{open{{aMD}} : false}" style="display:inline-block">
+        <span @click="open{{aMD}} = ! open{{aMD}}">{{ aMD }}</span>
+        <div x-show="open{{aMD}}">
+          {{ aMDText | safe }}
+        </div>
+      </div>
+    {% endfor %}
+    <div x-show="open">
+      {{ aDocDef.lpit.abstract | safe }}
+    </div>
+  </div>
+</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+

@@ -1,0 +1,90 @@
+#!.venv/bin/python
+
+import argparse
+import os
+from pathlib import Path
+from subprocess import run
+import sys
+import yaml
+
+from lpitPublisher.config import Config, addConfigurationArgs
+
+#################################################################
+# configuration
+
+pdfJsVersion = '5.4.394'
+downloadUrl  = 'https://github.com/mozilla/pdf.js/releases/download'
+
+#################################################################
+# do the work
+
+def runCmd(cmd, cwd, showStdOut=False, shell=False) :
+  print("---------------------------------------------------")
+  if shell : print(cmd)
+  else     : print(" ".join(cmd))
+  print("---------------------------------------------------")
+  result = run(cmd, capture_output=True, cwd=str(cwd), shell=shell)
+  if result.returncode == 0 :
+    if showStdOut : print(result.stdout.decode('utf-8'))
+    print("SUCCESS")
+  else :
+    print(result.stderr.decode('utf-8'))
+    sys.exit(result.returncode)
+    
+def parseArgs() :
+  parser = argparse.ArgumentParser(
+    prog='downloadPDFjs',
+    description="""
+      Download and patch for our use, the PDF.js distribution package.
+    """,
+    epilog="""something..."""
+  )
+
+  addConfigurationArgs(parser)
+
+  return vars(parser.parse_args())
+
+def cli() :
+  os.system("reset")
+
+  config = Config()
+  args = parseArgs()
+  config.loadConfig(args)
+  print(yaml.dump(config))
+
+  tmpPdfjsDir = Path('./tmp/pdfjs')
+  
+  runCmd(['rm', '-rf', str(tmpPdfjsDir)], '.')
+  
+  tmpPdfjsDir.mkdir(parents=True, exist_ok=True)
+  
+  runCmd([
+    'wget',
+    f'{downloadUrl}/v{pdfJsVersion}/pdfjs-{pdfJsVersion}-dist.zip',
+    '--output-document=pdfjs-dist.zip'
+  ], tmpPdfjsDir)
+
+  runCmd(['unzip', 'pdfjs-dist.zip'], tmpPdfjsDir)
+
+  webDir             = tmpPdfjsDir / 'web'
+  viewerHtmlPath     = webDir / 'viewer.html'
+  viewerHtmlOrigPath = webDir / 'viewer.html.orig'
+  runCmd(['cp', str(viewerHtmlPath), str(viewerHtmlOrigPath)], '.')
+
+  patchPath = Path(__file__).parent / 'viewerHtmlPatch'
+  runCmd([
+      'patch', str(viewerHtmlPath), str(patchPath)
+    ], '.', showStdOut=True
+  )
+
+  runCmd([
+    'sed', '-i', 
+    f's/XXXWEBSITENAMEXXX/{config['webSiteName']}/g',
+    str(viewerHtmlPath)
+  ], '.')
+
+######################################################################
+# Run the app if called as a main
+if __name__ == "__main__":
+  cli()
+

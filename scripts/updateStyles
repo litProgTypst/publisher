@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!.venv/bin/python
 
 # This python script updates the latest styles with any recent changes
 

@@ -2,6 +2,10 @@
 
 This YAML file is a dictionary containing the keys:
 
+ - **docOrderPriority** provides a numerical priority used to sort the
+   document order prior to rendering the table of contents. Lower numbers
+   have higher priority. The default priority is 0.
+
  - **doc** contains the subkeys:
    - **id** provides the unique document id.
    - **name** provides the name of the base document file.
