@@ -12,25 +12,50 @@
 <ul>
 {% for aDoc in documentOrder %}
 {%   set aDocDef = metaData[aDoc] %}
-<li><div x-data="{ open : false}">
+{%   set aDocTypst = aDocDef['metaData'][0]['value'] %}
+<li><span x-data="{ open: false, {% for aMD in aDocDef.markdown.keys() %} open{{aMD}}: false, {% endfor %} }">
     <span  @click="open = ! open">
       <span style="font-family: monospace; font-size: xx-large">
         <span x-show="open">-</span>
         <span x-show="! open">+</span>
       </span>
     </span> <strong>{{aDoc}}</strong>
-    {% for aMD, aMDText in aDocDef.markdown.items() %}
-      <div x-data="{open{{aMD}} : false}" style="display:inline-block">
+    {% for aMD in aDocDef.markdown.keys() %}
+      <span>
         <span @click="open{{aMD}} = ! open{{aMD}}">{{ aMD }}</span>
-        <div x-show="open{{aMD}}">
-          {{ aMDText | safe }}
-        </div>
-      </div>
+      </span>
     {% endfor %}
-    <div x-show="open">
-      {{ aDocDef.lpit.abstract | safe }}
+      <a href="/pdfjs/web/viewer.html?file=/pdfs/{{aDoc}}.pdf" target="lpit_{{aDoc}}">
+        <strong>PDF</strong>
+      </a>
+      <a href="{{ aDocDef['lpit']['gitHub'] }}" target="_blank">GitHub</a>
+    {% for aMD, aMDText in aDocDef.markdown.items() %}
+    <div class="border-4 border-blue-200" x-show="open{{aMD}}">
+      {{ aMDText | safe }}
     </div>
-  </div>
+    {% endfor %}
+    <div class="border-4 border-blue-200" x-show="open">
+      <div class="border-4 border-red-200">
+        {{ aDocDef.lpit.abstract | safe }}
+      </div>
+      <ul>
+        {% for aHeadingDef in aDocTypst['headings']  %}
+        {%  set aHeading = aHeadingDef['theHeading'] %}
+        {%  set aText = aHeading['body']['text']     %}
+        {%  set aPage = aHeadingDef['thePage']       %}
+        {%  set level = aHeading['level']            %}
+        <li>
+          {% for aLevel in range(level) %}
+          &#183; &nbsp;
+          {% endfor %}
+          <a href="/pdfjs/web/viewer.html?file=/pdfs/{{aDoc}}.pdf#page={{aPage}}" target="lpit_{{aDoc}}">
+            {{ aText }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </span>
 </li>
 {% endfor %}
 </ul>

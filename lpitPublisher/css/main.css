@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@source "../templates";
+@source "templates";
 
 /************************************************************
  We apply some of our own css to allow markdownDiv to work.
@@ -28,6 +28,10 @@ our ModalDialog HTMX component (in simpleComponents) using
 TailwindCSS classes... however this works well enough at
 the moment.
 *************************************************************/
+
+h1 {
+  font-weight: bolder;
+}
 
 /* HelpPage */
 

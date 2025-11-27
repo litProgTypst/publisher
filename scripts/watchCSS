@@ -3,8 +3,16 @@
 # This shell script watches our use of TailWindCSS and updates our custom
 # CSS files
 
+# [CLI and Standalone | tailwindlabs/tailwindcss |
+# DeepWiki](https://deepwiki.com/tailwindlabs/tailwindcss/4.3-cli-and-standalone)
+
+# [Beginner tutorial for setting up tailwind v 4 using the standalone CLI
+# (no node.js) · tailwindlabs/tailwindcss · Discussion
+# #15855](https://github.com/tailwindlabs/tailwindcss/discussions/15855)
+
 exec tailwindcss \
   --watch \
-  --input lpitPublisher/css/main.css \
+  --cwd lpitPublisher \
+  --input css/main.css \
   --output ~/.cache/lpitPublisher/webSite/css/main.css
 
