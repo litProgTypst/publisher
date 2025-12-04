@@ -28,6 +28,8 @@ installScript lpitGenerator
 installScript lpitDocumentInit
 installScript lpitStylesUpdater
 
+cp scripts/lpitPushChanges ~/.local/bin
+
 echo ""
 echo "The editable publisher commands have been created"
 echo ""
