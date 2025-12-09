@@ -1,12 +1,9 @@
 
 import os
 from pathlib import Path
-import sys
 import yaml
 
-def die(msg) :
-  print(msg)
-  sys.exit(1)
+from lpitConfig.config import die, LpitConfig
 
 def addConfigurationArgs(parser) :
   parser.add_argument(
@@ -21,7 +18,7 @@ def addConfigurationArgs(parser) :
     action='store_true'
   )
 
-class Config(object) :
+class Config(LpitConfig) :
   def __new__(cls) :
     if not hasattr(cls, 'instance') :
       cls.instance = super(Config, cls).__new__(cls)

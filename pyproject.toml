@@ -11,6 +11,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "markdown>=3.10",
     "types-Markdown>=3.10.0.20251106",
+    "lpitConfig @ git+https://github.com/litProgTypst/common-config.git",
 ]
 requires-python = ">=3.10"
 license = {text = "Apache2.0"}

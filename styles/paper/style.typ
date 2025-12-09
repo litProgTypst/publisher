@@ -73,3 +73,7 @@
   )
   // [ #yaml.encode(lpitDef) ]
 }
+
+// see: https://forum.typst.app/t/alphanumeric-style-how-to-get-disambiguation-letters-e-g-ass96a-and-ass96b-in-bibliography-labels/3871
+#set cite(style: "alphanumeric")
+
