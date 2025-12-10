@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.config/lpitPublisher/lpitPushChanges.bash
+source ~/.config/lpit/lpitPushChanges.bash
 
 if [ $# -ne 0 ] ; then
   remoteHost=$1
@@ -13,6 +13,6 @@ echo $remoteHtmlDir
 $sshKeyCmd
 
 rsync -av \
-  ~/.cache/lpitPublisher/webSite/ \
+  ~/.cache/lpit/webSite/ \
   $remoteUser@$remoteHost:$remoteHtmlDir
 

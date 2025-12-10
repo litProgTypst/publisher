@@ -1,78 +1,20 @@
 
-import os
 from pathlib import Path
-import yaml
 
 from lpitConfig.config import die, LpitConfig
+import lpitConfig.config as lConfig
 
 def addConfigurationArgs(parser) :
+  lConfig.addConfigurationArgs(parser)
+
   parser.add_argument(
-    '-c', '--config',
-    help="The path to the user configuration file",
-    default=os.path.expanduser('~/.config/lpitPublisher/config.yaml')
-  )
-  parser.add_argument(
-    '-v', '--verbose',
-    help="Be verbose",
-    default=False,
-    action='store_true'
+    'project',
+    help="Specify a project key to load the correct configuration",
   )
 
 class Config(LpitConfig) :
-  def __new__(cls) :
-    if not hasattr(cls, 'instance') :
-      cls.instance = super(Config, cls).__new__(cls)
-    return cls.instance
 
-  def __getitem__(self, key) :
-    return self.config[key]
-
-  def __contains__(self, key) :
-    return key in self.config
-
-  def __setitem__(self, key, value) :
-    self.config[key] = value
-
-  def print(self) :
-    print("-------------------------------------------------")
-    print(yaml.dump(self.config))
-    print("-------------------------------------------------")
-
-  def addCacheDirs(self) :
-    cachePath = Path('~/.cache/lpitPublisher')
-    if 'cacheDir' in self.config :
-      cachePath = Path(self.config['cacheDir'])
-    cachePath = cachePath.expanduser()
-    if not cachePath.exists() :
-      cachePath.mkdir(parents=True, exist_ok=True)
-    self.cacheDir = cachePath
-    self.config['cacheDir'] = str(cachePath)
-    self.htmlCache     = cachePath / 'html'
-    if not self.htmlCache.exists() :
-      self.htmlCache.mkdir(parents=True, exist_ok=True)
-    self.markdownCache = cachePath / 'markdown'
-    if not self.markdownCache.exists() :
-      self.markdownCache.mkdir(parents=True, exist_ok=True)
-    self.pdfCache = cachePath / 'pdf'
-    if not self.pdfCache.exists() :
-      self.pdfCache.mkdir(parents=True, exist_ok=True)
-    self.svgCache = cachePath / 'svg'
-    if not self.svgCache.exists() :
-      self.svgCache.mkdir(parents=True, exist_ok=True)
-    self.metaDataCache = cachePath / 'metaData'
-    if not self.metaDataCache.exists() :
-      self.metaDataCache.mkdir(parents=True, exist_ok=True)
-    self.lpitCache = cachePath / 'lpit'
-    if not self.lpitCache.exists() :
-      self.lpitCache.mkdir(parents=True, exist_ok=True)
-    self.shaSumsCache = cachePath / 'sha256sums'
-    if not self.shaSumsCache.exists() :
-      self.shaSumsCache.mkdir(parents=True, exist_ok=True)
-    self.webSiteCache = cachePath / 'webSite'
-    if not self.webSiteCache.exists() :
-      self.webSiteCache.mkdir(parents=True, exist_ok=True)
-
-  def checkDirs(self) :
+  def checkDocumentDirs(self) :
     if 'documentDirs' not in self.config :
       die("No document directories specified... nothing to do!")
     docDirs = self.config['documentDirs']
@@ -87,20 +29,13 @@ class Config(LpitConfig) :
         aDirPath.mkdir(parents=True, exist_ok=True)
 
   def loadConfig(self, args, verbose=False) :
-    configPath = Path(args['config']).expanduser()
+    self.initConfigFromArgs(args)
+    self.mergeConfigFrom('config.yaml')
+    self.mergeConfigFrom('publisher.yaml')
 
-    if not configPath.parent.exists() :
-      configPath.parent.mkdir(parents=True, exist_ok=True)
-
-    self.config = yaml.safe_load(configPath.read_text())
-    if not self.config :
-      self.config = {}
-
-    for aKey, aValue in args.items() :
-      if aValue : self.config[aKey] = aValue
-
-    if 'verbose' not in self.config :
-      self.config['verbose'] = verbose
+    if args['project'] :
+      if args['project'] in self.config['projects'] :
+        self.mergeConfigFrom(self.config['projects'][args['project']])
 
     if 'monitor' not in self.config :
       self.config['monitor'] = ['*.typ' ]
@@ -111,8 +46,5 @@ class Config(LpitConfig) :
     if 'webSiteName' not in self.config :
       self.config['webSiteName'] = 'LPiT Documents'
 
-    self.checkDirs()
-    self.addCacheDirs()
-
-    if self.config['verbose'] : self.print()
+    self.finishedLoading(args, verbose=verbose)
 

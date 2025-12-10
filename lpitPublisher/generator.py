@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import shutil
 import sys
-# import yaml
+import yaml
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
@@ -30,6 +30,8 @@ def getTemplate(aTemplateName) :
     sys.exit(1)
 
 def renderTemplate(aTemplate, varDict) :
+  print(yaml.dump(varDict))
+
   try :
     return aTemplate.render(**varDict)
   except Exception as err :
@@ -87,8 +89,10 @@ def cli() :
   config = Config()
   args = parseArgs()
   config.loadConfig(args)
+  config.checkDocumentDirs()
 
   metaData = loadMetaData(config)
+  # print(yaml.dump(metaData))
 
   documentOrder = sortDocuments(metaData)
 

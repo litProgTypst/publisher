@@ -1,6 +1,6 @@
 #!/bin/bash
 
-webDir=~/.cache/lpitPublisher/webSite
+webDir=~/.cache/lpit/webSite
 
 mkdir -p $webDir
 cd $webDir

@@ -14,5 +14,5 @@ exec tailwindcss \
   --watch \
   --cwd lpitPublisher \
   --input css/main.css \
-  --output ~/.cache/lpitPublisher/webSite/css/main.css
+  --output ~/.cache/lpit/webSite/css/main.css
 

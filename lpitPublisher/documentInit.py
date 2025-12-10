@@ -6,9 +6,9 @@ import yaml
 
 from jinja2 import Template
 
-from lpitPublisher.config import addConfigurationArgs, Config
-from lpitPublisher.utils import localLpitYamlPath, loadLpitYaml, \
-  stylesDir, loadStyleInfo, getStyleDir
+from lpitConfig.config import localLpitYamlPath, loadLpitYaml
+from lpitPublisher.config import Config, addConfigurationArgs
+from lpitPublisher.utils import stylesDir, loadStyleInfo, getStyleDir
 
 def createLpitYamlFile(lpitYamlPath, config) :
 
@@ -112,7 +112,6 @@ def cli() :
   config = Config()
   args = parseArgs()
   config.loadConfig(args)
-  config.print()
 
   lpitDef = loadLpitYaml()
   if not lpitDef :

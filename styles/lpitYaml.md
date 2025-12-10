@@ -49,6 +49,6 @@ This YAML file is a dictionary containing the keys:
 ## Local version
 
 If a file `lpitYaml.jinja2` is found in the config directory (by default
-`~/.config/lpitPublisher`) then it will be used as the Jinja2 template for
+`~/.config/lpit`) then it will be used as the Jinja2 template for
 the new `lpit.yaml` file.
 

@@ -20,10 +20,10 @@ website.
 
 ## Configuration and cache
 
-The **configuration** will be contained in a `~/.config/lpitPublisher`
+The **configuration** will be contained in a `~/.config/lpit`
 directory. This configuration *should* be version controlled.
 
-The **cache** will be contained in a `~/.var/cache/lpitPublisher`
+The **cache** will be contained in a `~/.cache/lpit`
 directory. This cache need not be version controlled, as it can and
 probably will be periodically recreated from the existing documents.
 

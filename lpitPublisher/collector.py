@@ -9,8 +9,8 @@ import shutil
 import time
 # import yaml
 
+from lpitConfig.config import loadLpitYaml
 from lpitPublisher.config import addConfigurationArgs, Config
-from lpitPublisher.utils import loadLpitYaml
 
 ######################################################################
 # asynchronously check a single document
@@ -55,9 +55,8 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
           rootDir
         )
 
-        if queryStdout :
-          queryPath = config.metaDataCache / docFileName.replace('.typ', '.yaml')  # noqa
-          queryPath.write_text(queryStdout)
+        queryPath = config.metaDataCache / docFileName.replace('.typ', '.yaml')  # noqa
+        queryPath.write_text(queryStdout)
 
         typstResults['query'] = {
           'stdout'  : queryStdout,
@@ -185,6 +184,7 @@ def cli() :
   config = Config()
   args = parseArgs()
   config.loadConfig(args)
+  config.checkDocumentDirs()
 
   documents = []
 
@@ -223,10 +223,17 @@ def cli() :
 
   print("")
 
-  if config['verbose'] :
-    for someMetaData in metadata.keys() :
-      print(json.dumps(metadata[someMetaData], indent=2))
-
+  checkFormats = ['metadata', 'pdf', 'svg', 'html']
+  for docKey in sorted(metadata.keys()) :
+    docMetaData = metadata[docKey]
+    print("-----------------------------------------------")
+    print(docKey)
+    if config['verbose'] :
+      print(json.dumps(docMetaData, indent=2))
+    for formatToCheck in checkFormats :
+      if formatToCheck in docMetaData :
+        if docMetaData[formatToCheck]['stderr'] :
+          print(docMetaData[formatToCheck]['stderr'])
   print("")
 
   endTime = time.time()
