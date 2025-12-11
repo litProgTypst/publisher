@@ -39,10 +39,10 @@
         {{ aDocDef.lpit.abstract | safe }}
       </div>
       <ul>
-        {% for aHeadingDef in aDocTypst['headings']  %}
-        {%  set aHeading = aHeadingDef['theHeading'] %}
+        {% for aHeadingDef in aDocTypst['heading']  %}
+        {%  set aHeading = aHeadingDef['data'] %}
         {%  set aText = aHeading['body']['text']     %}
-        {%  set aPage = aHeadingDef['thePage']       %}
+        {%  set aPage = aHeadingDef['page']       %}
         {%  set level = aHeading['level']            %}
         <li>
           {% for aLevel in range(level) %}

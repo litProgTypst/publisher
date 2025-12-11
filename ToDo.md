@@ -3,12 +3,15 @@
 - DONE update config to allow multiple configuration files in a "standard"
   place, chosen by any matching initial prefix.
 
-- add bibliographic references to styles and then provide an bibliography
-  in the generator
+- DONE add bibliographic references to style
 
-- add mathematical entities (theorems etc) to styles and then provide
-  associated tables in the generator.
+- DONE add cross-references to styles
 
-- add cross-references to styles and then provide an index in the
-  generator
+- add mathematical entities (theorems etc) to styles
+
+- provide a bibliography in the generator
+
+- provide mathematical entities tables in the generator.
+
+- provide an index of cross-references in the generator
 

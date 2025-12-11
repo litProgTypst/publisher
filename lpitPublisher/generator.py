@@ -9,7 +9,7 @@ import yaml
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from lpitPublisher.config import addConfigurationArgs, Config
-from lpitPublisher.utils import loadMetaData, sortDocuments
+from lpitPublisher.metaData import loadMetaData, sortDocuments
 
 ######################################################################
 # Setup templates
@@ -29,8 +29,11 @@ def getTemplate(aTemplateName) :
     print(repr(err))
     sys.exit(1)
 
-def renderTemplate(aTemplate, varDict) :
-  print(yaml.dump(varDict))
+def renderTemplate(aTemplate, varDict, verbose=False) :
+  if verbose :
+    print("----------------------------------------------")
+    print(aTemplate.name)
+    print(yaml.dump(varDict))
 
   try :
     return aTemplate.render(**varDict)
@@ -49,7 +52,8 @@ def renderTableOfContents(documentOrder, metaData, config) :
     {
       'documentOrder' : documentOrder,
       'metaData'      : metaData
-    }
+    },
+    verbose=config['verbose']
   )
 
   tocPath = config.webSiteCache / 'toc.html'
