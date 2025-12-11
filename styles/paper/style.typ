@@ -112,15 +112,16 @@
   #align(center, body) #label("abstract")
 ]
 
-#let setupDoc(lpitDef) = {
-  // see: https://forum.typst.app/t/alphanumeric-style-how-to-get-disambiguation-letters-e-g-ass96a-and-ass96b-in-bibliography-labels/3871
+#let setupDoc(lpitDef, doc) = {
+  // document set and show rules
   set cite(style: "alphanumeric")
 
+  // function which adds content
   lpitDocument(lpitDef.doc.id,
     shortTitle: lpitDef.title.short,
     longTitle: lpitDef.title.long
   )
-  // [ #yaml.encode(lpitDef) ]
+  doc
 }
 
 
