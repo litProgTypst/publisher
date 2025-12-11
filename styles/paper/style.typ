@@ -33,8 +33,6 @@
   }
 }
 
-
-
 #let lpitDocument(
   docId,
   shortTitle: [],
@@ -43,20 +41,68 @@
   context {
     let theData = (:)
 
-    let headingData = ()
-    for aHeading in query(heading) {
-      let loc = aHeading.location()
+    let queryData = ()
+    for aQuery in query(heading) {
+      let loc = aQuery.location()
       let aPageNum = loc.page()
-      headingData.push(("theHeading": aHeading, "thePage": aPageNum))
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
 
-    theData.headings = headingData
+    for aQuery in query(ref) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(cite) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(figure) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(table) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(link) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(footnote) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(bibliography) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    for aQuery in query(outline) {
+      let loc = aQuery.location()
+      let aPageNum = loc.page()
+      queryData.push(("data": aQuery, "page": aPageNum))
+    }
+
+    theData.queries = queryData
 
     theData.docId = docId
     theData.shortTitle = shortTitle
     theData.longTitle = longTitle
     theData.abstract = query(<abstract>)
     theData.inputs   = sys.inputs
-    }
     [ #metadata(theData) <lpitMetaData> ]
   }
   [ #longTitle #label("title") ]
@@ -67,6 +113,9 @@
 ]
 
 #let setupDoc(lpitDef) = {
+  // see: https://forum.typst.app/t/alphanumeric-style-how-to-get-disambiguation-letters-e-g-ass96a-and-ass96b-in-bibliography-labels/3871
+  set cite(style: "alphanumeric")
+
   lpitDocument(lpitDef.doc.id,
     shortTitle: lpitDef.title.short,
     longTitle: lpitDef.title.long
@@ -74,6 +123,4 @@
   // [ #yaml.encode(lpitDef) ]
 }
 
-// see: https://forum.typst.app/t/alphanumeric-style-how-to-get-disambiguation-letters-e-g-ass96a-and-ass96b-in-bibliography-labels/3871
-#show bibliography: set cite(style: "alphanumeric")
 
