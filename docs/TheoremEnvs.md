@@ -1,12 +1,8 @@
 # Theorem environments in Typst
 
-The following packages have reasonable documentation manuals:
+The following four packages have reasonable documentation manuals. We will
+try them in the following order:
 
-- [theofig – Typst Universe](https://typst.app/universe/package/theofig)
-  - best documented
-  - very complete 9.6 kb
-  - second largest package
-  
 - [theoretic – Typst Universe](https://typst.app/universe/package/theoretic)
   - best documented
   - most "complete" set of tools
@@ -17,6 +13,12 @@ The following packages have reasonable documentation manuals:
   - well documented
   - fairly complete
   - "smaller" package 4.7 kb
+  
+- [theofig – Typst Universe](https://typst.app/universe/package/theofig)
+  - best documented
+  - very complete 9.6 kb
+  - second largest package
+  - all theorem environments are wrapped in a figure ("Theo Fig")
   
 - [trivial – Typst Universe](https://typst.app/universe/package/trivial)
   - poorly documented
