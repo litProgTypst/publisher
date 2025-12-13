@@ -9,7 +9,7 @@ import yaml
 from jinja2 import Environment, PackageLoader, select_autoescape
 
 from lpitPublisher.config import addConfigurationArgs, Config
-from lpitPublisher.metaData import loadMetaData, sortDocuments
+from lpitPublisher.metaData import loadMetaData, sortDocuments, collectLabels
 
 ######################################################################
 # Setup templates
@@ -59,6 +59,23 @@ def renderTableOfContents(documentOrder, metaData, config) :
   tocPath = config.webSiteCache / 'toc.html'
   tocPath.write_text(tocHtml)
 
+def renderLabelIndex(metaData, config) :
+  labels = collectLabels(metaData, config)
+  # print(yaml.dump(labels))
+
+  template = getTemplate('labelIndex.html')
+
+  labelIndexHtml = renderTemplate(
+    template,
+    {
+      'labelsIndexLevel' : config['labelsIndexLevel'],
+      'labels'           : labels,
+    },
+    verbose=config['verbose']
+  )
+  labelIndexPath = config.webSiteCache / 'labelIndex.html'
+  labelIndexPath.write_text(labelIndexHtml)
+
 # def renderPdfs(metaData, config) :
   # template = getTemplate('pdf.html')
   # for
@@ -105,6 +122,8 @@ def cli() :
   config.webSiteCache.mkdir(parents=True, exist_ok=True)
 
   renderTableOfContents(documentOrder, metaData, config)
+
+  renderLabelIndex(metaData, config)
 
   if 'faviconDir' in config :
     faviconDir = Path(config['faviconDir']).expanduser()

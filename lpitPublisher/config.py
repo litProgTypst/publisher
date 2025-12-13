@@ -46,5 +46,8 @@ class Config(LpitConfig) :
     if 'webSiteName' not in self.config :
       self.config['webSiteName'] = 'LPiT Documents'
 
+    if 'labelsIndexLevel' not in self.config :
+      self.config['labelsIndexLevel'] = 1
+
     self.finishedLoading(args, verbose=verbose)
 

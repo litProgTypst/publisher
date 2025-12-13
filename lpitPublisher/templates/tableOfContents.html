@@ -40,10 +40,9 @@
       </div>
       <ul>
         {% for aHeadingDef in aDocTypst['heading']  %}
-        {%  set aHeading = aHeadingDef['data'] %}
-        {%  set aText = aHeading['body']['text']     %}
+        {%  set aText = aHeadingDef['body']['text']     %}
         {%  set aPage = aHeadingDef['page']       %}
-        {%  set level = aHeading['level']            %}
+        {%  set level = aHeadingDef['level']            %}
         <li>
           {% for aLevel in range(level) %}
           &#183; &nbsp;

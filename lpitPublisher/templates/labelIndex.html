@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>Index of labels</title>
+{% endblock %}
+
+{% block header %}
+  <h1>Index of labels</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for key in labels recursive %}
+  <li>
+  {{ key }}
+  {%- set item = labels[key] -%}
+  {%- if item is mapping -%}
+    <ul>{{ loop(item) }}</ul>
+  {%- endif -%}
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+

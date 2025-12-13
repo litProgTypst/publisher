@@ -6,15 +6,50 @@ from markdown import markdown
 
 from lpitPublisher.utils import die
 
+keysToIgnore = [
+  'docId',
+  'inputs',
+  'longTitle',
+  'queries',
+  'shortTitle',
+]
+
+def collectLabels(rawMD, config) :
+
+  labelsIndexLevel = config['labelsIndexLevel']
+
+  labels = {}
+
+  for aDocKey, aDocDef in rawMD.items() :
+    aDocMD = aDocDef['metaData'][0]['value']
+    for aKey in aDocMD.keys() :
+      if aKey in keysToIgnore : continue
+      for anItem in aDocMD[aKey] :
+        if 'label' not in anItem : continue
+        itemLabel = anItem['label']
+        if itemLabel == 'none' : continue
+        itemLabel = itemLabel.strip('<').strip('>')
+        curLevel = labels
+        for aLevel in range(labelsIndexLevel) :
+          curTag = itemLabel[:aLevel + 1]
+          if curTag not in curLevel : curLevel[curTag] = {}
+          curLevel = curLevel[curTag]
+        if itemLabel not in curLevel : curLevel[itemLabel] = []
+        curLevel[itemLabel].append(( aDocKey, anItem['label'], anItem['page']))
+
+  return labels
+
 def filterQueryData(rawMD) :
   # setup
   metaData = rawMD[0]['value']
+  if 'abstract'     not in metaData : metaData['abstract']     = []
   if 'heading'      not in metaData : metaData['heading']      = []
   if 'ref'          not in metaData : metaData['ref']          = []
   if 'cite'         not in metaData : metaData['cite']         = []
   if 'figure'       not in metaData : metaData['figure']       = []
-  if 'table'        not in metaData : metaData['table']        = []
+  # if 'table'        not in metaData : metaData['table']        = []
   if 'link'         not in metaData : metaData['link']         = []
+  if 'equation'     not in metaData : metaData['equation']     = []
   if 'footnote'     not in metaData : metaData['footnote']     = []
   if 'bibliography' not in metaData : metaData['bibliography'] = []
   if 'outline'      not in metaData : metaData['outline']      = []
@@ -22,7 +57,7 @@ def filterQueryData(rawMD) :
   # do the work
   queryData = metaData['queries']
   for aQData in queryData :
-    metaData[aQData['data']['func']].append(copy.deepcopy(aQData))
+    metaData[aQData['type']].append(copy.deepcopy(aQData))
   return rawMD
 
 def loadMetaData(config) :
@@ -61,6 +96,8 @@ def loadMetaData(config) :
       metaData[theDoc]['markdown'] = {}
     mdHtml = markdown(aMarkdownPath.read_text())
     metaData[theDoc]['markdown'][theMarkdown] = mdHtml
+
+  collectLabels(metaData, config)
 
   if config['verbose'] : print(yaml.dump(metaData))
 

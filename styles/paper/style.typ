@@ -1,4 +1,5 @@
 
+#import "metadata.typ": gatherMetaData
 
 #import "@preview/cetz:0.4.2" as cetz 
 #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
@@ -52,67 +53,12 @@
   context {
     let theData = (:)
 
-    let queryData = ()
-    for aQuery in query(heading) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(ref) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(cite) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(figure) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(table) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(link) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(footnote) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(bibliography) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    for aQuery in query(outline) {
-      let loc = aQuery.location()
-      let aPageNum = loc.page()
-      queryData.push(("data": aQuery, "page": aPageNum))
-    }
-
-    theData.queries = queryData
+    theData.queries = gatherMetaData()
 
     theData.docId = docId
     theData.shortTitle = shortTitle
     theData.longTitle = longTitle
-    theData.abstract = query(<abstract>)
+    // theData.abstract = query(<abstract>)
     theData.inputs   = sys.inputs
     [ #metadata(theData) <lpitMetaData> ]
   }
