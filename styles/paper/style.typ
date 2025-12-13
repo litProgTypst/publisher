@@ -10,11 +10,16 @@
 
 #import fletcher.shapes: *
 
-#import "@preview/theoretic:0.2.0" as theoretic: theorem, proof, qed
-#show ref: theoretic.show-ref
-// set up your needed presets
-#let corollary = theorem.with(kind: "corollary", supplement: "Corollary")
-#let example = theorem.with(kind: "example", supplement: "Example", number: none)
+#import "@preview/ctheorems:1.1.3": *
+#show: thmrules
+
+/////////////////////////////////////////////////////////////////////////
+// set up the Theorem Environments that we use:
+//
+#let definition = thmbox("definition", "Definition")
+#let lemma = thmbox("lemma", "Lemma")
+#let corollary = thmbox("corollary", "Corollary")
+#let example = thmbox("example", "Example").with(number: none)
 
 // Our goal is to adapt one or more of the AMS like journal styles for our
 // specific use. However, at the moment, we will settle for less...
@@ -121,7 +126,7 @@
 #let setupDoc(lpitDef, doc) = {
   // document set and show rules
   set cite(style: "alphanumeric")
-
+  set heading(numbering: "1.")
   // function which adds content
   lpitDocument(lpitDef.doc.id,
     shortTitle: lpitDef.title.short,

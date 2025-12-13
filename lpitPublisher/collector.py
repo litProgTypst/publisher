@@ -155,7 +155,7 @@ def documentFilesChanged(docPath, docName, config) :
 
   result = 1
   if cachedSumsPath.exists() :
-    result = os.system(f"diff {cachedSumsPath} {newSumsPath}")
+    result = os.system(f"cmp -s {cachedSumsPath} {newSumsPath}")
 
   shutil.move(newSumsPath, cachedSumsPath)
 
