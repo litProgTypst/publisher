@@ -10,13 +10,24 @@
 
 {% block content %}
 <ul>
-{% for key in labels recursive %}
+{% for key in labelLevels recursive %}
+{% set item = labelLevels[key] %}
   <li>
-  {{ key }}
-  {%- set item = labels[key] -%}
-  {%- if item is mapping -%}
-    <ul>{{ loop(item) }}</ul>
-  {%- endif -%}
+    {{ key }}
+    {% if key in labelsDesc %}
+    <div>{{labelsDesc[key] | safe }}</div>
+    {% endif %}
+    {% if key in labels %}
+      <ul>
+      {% for aTarget in labels[key] %}
+      {% set aDoc = aTarget[0] %}
+        <li><a href="/labels/{{aDoc}}/{{key}}" target="lpit_{{aDoc}}">{{aDoc}}-{{key}}</a></li>
+      {% endfor %}
+      </ul>
+    {% endif %}
+    {%- if item is mapping -%}
+      <ul>{{ loop(item) }}</ul>
+    {%- endif -%} 
   </li>
 {% endfor %}
 </ul>

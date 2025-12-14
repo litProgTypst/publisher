@@ -7,6 +7,7 @@ import sys
 import yaml
 
 from jinja2 import Environment, PackageLoader, select_autoescape
+from markdown import markdown
 
 from lpitPublisher.config import addConfigurationArgs, Config
 from lpitPublisher.metaData import loadMetaData, sortDocuments, collectLabels
@@ -60,16 +61,24 @@ def renderTableOfContents(documentOrder, metaData, config) :
   tocPath.write_text(tocHtml)
 
 def renderLabelIndex(metaData, config) :
-  labels = collectLabels(metaData, config)
-  # print(yaml.dump(labels))
+  labels, labelLevels = collectLabels(metaData, config)
+
+  labelsDescPath = config.cacheDir / 'labelsDesc.yaml'
+  labelsDesc = {}
+  if labelsDescPath.exists() :
+    labelsDesc = yaml.safe_load(labelsDescPath.read_text())
+
+  for aLabel in labelsDesc.keys() :
+    labelsDesc[aLabel] = markdown(labelsDesc[aLabel])
 
   template = getTemplate('labelIndex.html')
 
   labelIndexHtml = renderTemplate(
     template,
     {
-      'labelsIndexLevel' : config['labelsIndexLevel'],
-      'labels'           : labels,
+      'labelsDesc'  : labelsDesc,
+      'labels'      : labels,
+      'labelLevels' : labelLevels,
     },
     verbose=config['verbose']
   )

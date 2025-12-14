@@ -19,6 +19,7 @@ def collectLabels(rawMD, config) :
   labelsIndexLevel = config['labelsIndexLevel']
 
   labels = {}
+  labelLevels = {}
 
   for aDocKey, aDocDef in rawMD.items() :
     aDocMD = aDocDef['metaData'][0]['value']
@@ -28,16 +29,22 @@ def collectLabels(rawMD, config) :
         if 'label' not in anItem : continue
         itemLabel = anItem['label']
         if itemLabel == 'none' : continue
-        itemLabel = itemLabel.strip('<').strip('>')
-        curLevel = labels
+
+        # found a valid label record it
+        itemLabel = itemLabel.strip('<>')
+        if itemLabel not in labels :
+          labels[itemLabel] = []
+        labels[itemLabel].append(( aDocKey, anItem['label'], anItem['page']))
+
+        # add it to the label levels
+        curLevel = labelLevels
         for aLevel in range(labelsIndexLevel) :
           curTag = itemLabel[:aLevel + 1]
           if curTag not in curLevel : curLevel[curTag] = {}
           curLevel = curLevel[curTag]
-        if itemLabel not in curLevel : curLevel[itemLabel] = []
-        curLevel[itemLabel].append(( aDocKey, anItem['label'], anItem['page']))
+        if itemLabel not in curLevel : curLevel[itemLabel] = {}
 
-  return labels
+  return (labels, labelLevels)
 
 def filterQueryData(rawMD) :
   # setup
