@@ -6,46 +6,6 @@ from markdown import markdown
 
 from lpitPublisher.utils import die
 
-keysToIgnore = [
-  'docId',
-  'inputs',
-  'longTitle',
-  'queries',
-  'shortTitle',
-]
-
-def collectLabels(rawMD, config) :
-
-  labelsIndexLevel = config['labelsIndexLevel']
-
-  labels = {}
-  labelLevels = {}
-
-  for aDocKey, aDocDef in rawMD.items() :
-    aDocMD = aDocDef['metaData'][0]['value']
-    for aKey in aDocMD.keys() :
-      if aKey in keysToIgnore : continue
-      for anItem in aDocMD[aKey] :
-        if 'label' not in anItem : continue
-        itemLabel = anItem['label']
-        if itemLabel == 'none' : continue
-
-        # found a valid label record it
-        itemLabel = itemLabel.strip('<>')
-        if itemLabel not in labels :
-          labels[itemLabel] = []
-        labels[itemLabel].append(( aDocKey, anItem['label'], anItem['page']))
-
-        # add it to the label levels
-        curLevel = labelLevels
-        for aLevel in range(labelsIndexLevel) :
-          curTag = itemLabel[:aLevel + 1]
-          if curTag not in curLevel : curLevel[curTag] = {}
-          curLevel = curLevel[curTag]
-        if itemLabel not in curLevel : curLevel[itemLabel] = {}
-
-  return (labels, labelLevels)
-
 def filterQueryData(rawMD) :
   # setup
   metaData = rawMD[0]['value']
@@ -103,8 +63,6 @@ def loadMetaData(config) :
       metaData[theDoc]['markdown'] = {}
     mdHtml = markdown(aMarkdownPath.read_text())
     metaData[theDoc]['markdown'][theMarkdown] = mdHtml
-
-  collectLabels(metaData, config)
 
   if config['verbose'] : print(yaml.dump(metaData))
 

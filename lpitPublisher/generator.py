@@ -3,45 +3,15 @@ import argparse
 import os
 from pathlib import Path
 import shutil
-import sys
-import yaml
-
-from jinja2 import Environment, PackageLoader, select_autoescape
-from markdown import markdown
+# import yaml
 
 from lpitPublisher.config import addConfigurationArgs, Config
-from lpitPublisher.metaData import loadMetaData, sortDocuments, collectLabels
+from lpitPublisher.metaData import loadMetaData, sortDocuments
+from lpitPublisher.jinjaUtils import getTemplate, renderTemplate
 
-######################################################################
-# Setup templates
-
-jinjaEnv = Environment(
-  loader=PackageLoader('lpitPublisher', 'templates'),
-  autoescape=select_autoescape(
-    enabled_extensions=('html', 'xml')
-  )
-)
-
-def getTemplate(aTemplateName) :
-  try :
-    return jinjaEnv.get_template(aTemplateName)
-  except Exception as err :
-    print(f"Could not get template: {aTemplateName}")
-    print(repr(err))
-    sys.exit(1)
-
-def renderTemplate(aTemplate, varDict, verbose=False) :
-  if verbose :
-    print("----------------------------------------------")
-    print(aTemplate.name)
-    print(yaml.dump(varDict))
-
-  try :
-    return aTemplate.render(**varDict)
-  except Exception as err :
-    print(f"Could not render template: {aTemplate.name}")
-    print(repr(err))
-    sys.exit(1)
+from lpitPublisher.genLabels import renderLabelIndex
+from lpitPublisher.genBibliography import renderBibliography
+from lpitPublisher.genTheorems import renderTheoremIndex
 
 ######################################################################
 
@@ -59,31 +29,6 @@ def renderTableOfContents(documentOrder, metaData, config) :
 
   tocPath = config.webSiteCache / 'toc.html'
   tocPath.write_text(tocHtml)
-
-def renderLabelIndex(metaData, config) :
-  labels, labelLevels = collectLabels(metaData, config)
-
-  labelsDescPath = config.cacheDir / 'labelsDesc.yaml'
-  labelsDesc = {}
-  if labelsDescPath.exists() :
-    labelsDesc = yaml.safe_load(labelsDescPath.read_text())
-
-  for aLabel in labelsDesc.keys() :
-    labelsDesc[aLabel] = markdown(labelsDesc[aLabel])
-
-  template = getTemplate('labelIndex.html')
-
-  labelIndexHtml = renderTemplate(
-    template,
-    {
-      'labelsDesc'  : labelsDesc,
-      'labels'      : labels,
-      'labelLevels' : labelLevels,
-    },
-    verbose=config['verbose']
-  )
-  labelIndexPath = config.webSiteCache / 'labelIndex.html'
-  labelIndexPath.write_text(labelIndexHtml)
 
 # def renderPdfs(metaData, config) :
   # template = getTemplate('pdf.html')
@@ -133,6 +78,8 @@ def cli() :
   renderTableOfContents(documentOrder, metaData, config)
 
   renderLabelIndex(metaData, config)
+  renderBibliography(metaData, config)
+  renderTheoremIndex(metaData, config)
 
   if 'faviconDir' in config :
     faviconDir = Path(config['faviconDir']).expanduser()

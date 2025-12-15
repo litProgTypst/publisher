@@ -18,13 +18,13 @@
     <div>{{labelsDesc[key] | safe }}</div>
     {% endif %}
     {% if key in labels %}
-      <ul>
+      <div>
       {% for aTarget in labels[key] %}
       {% set aDoc = aTarget[0] %}
       {% set aPage = aTarget[2] %}
-        <li><a href="/labels/{{aDoc}}/{{key}}/{{aPage}}" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a></li>
+        <a href="/labels/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a>
       {% endfor %}
-      </ul>
+      </div>
     {% endif %}
     {%- if item is mapping -%}
       <ul>{{ loop(item) }}</ul>
