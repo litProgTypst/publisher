@@ -21,7 +21,8 @@
       <ul>
       {% for aTarget in labels[key] %}
       {% set aDoc = aTarget[0] %}
-        <li><a href="/labels/{{aDoc}}/{{key}}" target="lpit_{{aDoc}}">{{aDoc}}-{{key}}</a></li>
+      {% set aPage = aTarget[2] %}
+        <li><a href="/labels/{{aDoc}}/{{key}}/{{aPage}}" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a></li>
       {% endfor %}
       </ul>
     {% endif %}
