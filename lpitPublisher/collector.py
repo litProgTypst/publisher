@@ -34,12 +34,6 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
     aDoc = await docQueue.get()
     try :
 
-      # EVENTUALLY we want to read all (sub)typst documents looking for
-      # `#import` or `#include` statements. This will allow us to cache
-      # the metadata results based upon included file modification times.
-      # If none of the included files have changed, then we do not need to
-      # re-collect the metadata.
-
       rootDir     = aDoc.parent
       docFileName = aDoc.name
       print(f"({workerId})<{docQueue.qsize()}>  {rootDir} {docFileName}")
@@ -147,7 +141,7 @@ def documentFilesChanged(docPath, docName, config) :
   newFilesPath = newPath.with_suffix('.files')
   newSumsPath  = newPath.with_suffix('.sums')
 
-  cachedPath     = config.shaSumsCache / docName
+  cachedPath     = config.sha256sumsCache / docName
   cachedSumsPath = cachedPath.with_suffix('.sums')
 
   newFilesPath.write_text('\n'.join(filesToCheck))
@@ -208,6 +202,7 @@ def cli() :
       documents.append(docDir / docName)
 
       shutil.copy(aLpitYaml, config.lpitCache / (docName.replace('.typ', '.yaml')))  # noqa
+      shutil.copy(docDir / 'doc.bib', config.bibCache / (docName.replace('.typ', '.bib')))  # noqa
 
       markdownPath = config.markdownCache / (docName.replace('.typ', ''))
       markdownPath.mkdir(parents=True, exist_ok=True)

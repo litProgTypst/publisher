@@ -30,9 +30,18 @@ def renderTableOfContents(documentOrder, metaData, config) :
   tocPath = config.webSiteCache / 'toc.html'
   tocPath.write_text(tocHtml)
 
-# def renderPdfs(metaData, config) :
-  # template = getTemplate('pdf.html')
-  # for
+def renderWebsiteIndex(config) :
+  template = getTemplate('websiteIndex.html')
+
+  indexHtml = renderTemplate(
+    template,
+    {
+    },
+    verbose=config['verbose']
+  )
+
+  indexPath = config.webSiteCache / 'index.html'
+  indexPath.write_text(indexHtml)
 
 ######################################################################
 # Provide the command line interface
@@ -80,6 +89,8 @@ def cli() :
   renderLabelIndex(metaData, config)
   renderBibliography(metaData, config)
   renderTheoremIndex(metaData, config)
+
+  renderWebsiteIndex(config)
 
   if 'faviconDir' in config :
     faviconDir = Path(config['faviconDir']).expanduser()

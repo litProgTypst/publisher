@@ -38,7 +38,7 @@ class Config(LpitConfig) :
         self.mergeConfigFrom(self.config['projects'][args['project']])
 
     if 'monitor' not in self.config :
-      self.config['monitor'] = ['*.typ' ]
+      self.config['monitor'] = ['*.typ', '*.bib' ]
 
     if 'formats' not in self.config :
       self.config['formats'] = [ 'metadata', 'html', 'svg', 'pdf' ]

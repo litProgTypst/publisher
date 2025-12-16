@@ -46,6 +46,9 @@ def createInitialDocument(lpitDef, config, importsOnly=False) :
 
   docPath = Path(docPath).expanduser()
   docPath.parent.mkdir(parents=True, exist_ok=True)
+
+  (docPath.parent / 'doc.bib').touch(exist_ok=True)
+
   if docPath.exists() : return
 
   documentParts = ['imports', 'frontMatter', 'body', 'endMatter']
