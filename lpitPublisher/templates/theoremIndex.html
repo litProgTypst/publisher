@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>Index of Theorems</title>
+{% endblock %}
+
+{% block header %}
+  <h1>Index of Theorems</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for key in theoremLevels recursive %}
+{% set item = theoremLevels[key] %}
+  <li>
+    {{ key }}
+    {% if key in labelsDesc %}
+    <div>{{labelsDesc[key] | safe }}</div>
+    {% endif %}
+    {% if key in theorems %}
+      <div>
+      {% for aTarget in theorems[key] %}
+      {% set aDoc = aTarget[0] %}
+      {% set aPage = aTarget[2] %}
+      {% set aType = aTarget[3] %}
+        <a href="/theorems/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aType}}-{{aPage}}</a>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {%- if item is mapping -%}
+      <ul>{{ loop(item) }}</ul>
+    {%- endif -%} 
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+

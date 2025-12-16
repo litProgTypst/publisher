@@ -4,6 +4,8 @@ from pathlib import Path
 from lpitConfig.config import die, LpitConfig
 import lpitConfig.config as lConfig
 
+indices = [ 'labels', 'bibliography', 'theorems', 'figures' ]
+
 def addConfigurationArgs(parser) :
   lConfig.addConfigurationArgs(parser)
 
@@ -29,7 +31,6 @@ class Config(LpitConfig) :
         aDirPath.mkdir(parents=True, exist_ok=True)
 
   def addIndexLevels(self) :
-    indices = ['labels', 'bibliography' ]
     if 'indexLevels' not in self.config :
       self.config['indexLevels'] = {}
     indexLevels = self.config['indexLevels']

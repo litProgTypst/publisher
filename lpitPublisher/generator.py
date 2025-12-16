@@ -12,6 +12,7 @@ from lpitPublisher.jinjaUtils import getTemplate, renderTemplate
 from lpitPublisher.genLabels import renderLabelIndex
 from lpitPublisher.genBibliography import renderBibliography
 from lpitPublisher.genTheorems import renderTheoremIndex
+from lpitPublisher.genFigures import renderFigureIndex
 
 ######################################################################
 
@@ -89,6 +90,7 @@ def cli() :
   renderLabelIndex(metaData, config)
   renderBibliography(metaData, config)
   renderTheoremIndex(metaData, config)
+  renderFigureIndex(metaData, config)
 
   renderWebsiteIndex(config)
 

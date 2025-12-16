@@ -49,3 +49,24 @@ def compileKeyLevels(someKeys, keyIndexLevel) :
 
   return keyLevels
 
+def createRedirects(theTargetDict, basePath, verbose) :
+  template = getTemplate('redirect.html')
+
+  for aKey, aDef in theTargetDict.items() :
+    for aTarget in aDef :
+      theDoc = aTarget[0]
+      thePage = aTarget[2]
+
+      redirectHtml = renderTemplate(
+        template,
+        {
+          'url'      : f"/pdfjs/web/viewer.html?file=/pdfs/{theDoc}.pdf#page={thePage}",  # noqa
+          'target'   : f"lpit_{theDoc}",
+          'pageName' : f"{theDoc}-{aKey}-{thePage}"
+        },
+        verbose=verbose
+      )
+
+      redirectPath = basePath / theDoc / aKey / (str(thePage) + '.html')  # noqa
+      redirectPath.parent.mkdir(parents=True, exist_ok=True)
+      redirectPath.write_text(redirectHtml)

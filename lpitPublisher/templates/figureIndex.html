@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>Index of Figures</title>
+{% endblock %}
+
+{% block header %}
+  <h1>Index of Figures</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for key in figureLevels recursive %}
+{% set item = figureLevels[key] %}
+  <li>
+    {{ key }}
+    {% if key in labelsDesc %}
+    <div>{{labelsDesc[key] | safe }}</div>
+    {% endif %}
+    {% if key in figures %}
+      <div>
+      {% for aTarget in figures[key] %}
+      {% set aDoc = aTarget[0] %}
+      {% set aPage = aTarget[2] %}
+        <a href="/figures/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {%- if item is mapping -%}
+      <ul>{{ loop(item) }}</ul>
+    {%- endif -%} 
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
+

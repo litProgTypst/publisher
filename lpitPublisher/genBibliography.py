@@ -7,7 +7,7 @@ from pybtex import format_from_string  # type: ignore
 # from markdown import markdown
 
 from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
-  compileKeyLevels
+  compileKeyLevels, createRedirects
 
 def addBibEntry(aBibEntry, bibEntries) :
   aKey = aBibEntry[0].split('{')[1].strip(',')
@@ -78,28 +78,6 @@ def collectBibEntryTargets(metaData) :
 
   return bibEntryTargets
 
-def createBibEntryRedirects(bibEntryTargets, config) :
-  template = getTemplate('redirect.html')
-
-  for citeKey, citeDef in bibEntryTargets.items() :
-    for citeTarget in citeDef :
-      theDoc = citeTarget[0]
-      thePage = citeTarget[2]
-
-      redirectHtml = renderTemplate(
-        template,
-        {
-          'url'      : f"/pdfjs/web/viewer.html?file=/pdfs/{theDoc}.pdf#page={thePage}",  # noqa
-          'target'   : f"lpit_{theDoc}",
-          'pageName' : f"{theDoc}-{citeKey}-{thePage}"
-        },
-        verbose=config['verbose']
-      )
-
-      redirectPath = config.webSiteCache / 'citations' / theDoc / citeKey / (str(thePage) + '.html')  # noqa
-      redirectPath.parent.mkdir(parents=True, exist_ok=True)
-      redirectPath.write_text(redirectHtml)
-
 def renderBibliography(metaData, config) :
   bibHtml = collectBibliographyHtml(config)
   bibEntryTargets = collectBibEntryTargets(metaData)
@@ -107,7 +85,11 @@ def renderBibliography(metaData, config) :
     sorted(bibHtml.keys()), config['indexLevels']['bibliography']
   )
 
-  createBibEntryRedirects(bibEntryTargets, config)
+  createRedirects(
+    bibEntryTargets,
+    config.webSiteCache / 'citations',
+    config['verbose']
+  )
 
   template = getTemplate('bibliography.html')
 

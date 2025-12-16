@@ -1,9 +1,10 @@
+
 # import yaml
 
 from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
   compileKeyLevels, createRedirects
 
-def collectTheorems(metaData) :
+def collectFigures(metaData) :
   theorems = {}
 
   for aDocKey, aDocDef in metaData.items() :
@@ -27,29 +28,29 @@ def collectTheorems(metaData) :
 
   return theorems
 
-def renderTheoremIndex(metaData, config) :
-  theorems = collectTheorems(metaData)
-  theoremLevels = compileKeyLevels(
-    sorted(theorems.keys()), config['indexLevels']['theorems']
+def renderFigureIndex(metaData, config) :
+  figures = collectFigures(metaData)
+  figureLevels = compileKeyLevels(
+    sorted(figures.keys()), config['indexLevels']['figures']
   )
 
   createRedirects(
-    theorems,
-    config.webSiteCache / 'theorems',
+    figures,
+    config.webSiteCache / 'figures',
     config['verbose']
   )
 
-  template = getTemplate('theoremIndex.html')
+  template = getTemplate('figureIndex.html')
 
-  theoremIndexHtml = renderTemplate(
+  figureIndexHtml = renderTemplate(
     template,
     {
-      'labelsDesc'    : {},
-      'theorems'      : theorems,
-      'theoremLevels' : theoremLevels,
+      'labelsDesc'   : {},
+      'figures'      : figures,
+      'figureLevels' : figureLevels,
     },
     verbose=config['verbose']
   )
-  theoremIndexPath = config.webSiteCache / 'theoremIndex.html'
-  theoremIndexPath.write_text(theoremIndexHtml)
+  theoremIndexPath = config.webSiteCache / 'figureIndex.html'
+  theoremIndexPath.write_text(figureIndexHtml)
 
