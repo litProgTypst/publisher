@@ -1,5 +1,8 @@
 
 from pathlib import Path
+import yaml
+
+from markdown import markdown
 
 from lpitConfig.config import die, LpitConfig
 import lpitConfig.config as lConfig
@@ -38,6 +41,15 @@ class Config(LpitConfig) :
       if anIndex not in indexLevels :
         indexLevels[anIndex] = 1
 
+  def loadLabelsDesc(self) :
+    labelsDescPath = self.cacheDir / 'labelsDesc.yaml'
+    self.labelsDesc = {}
+    if labelsDescPath.exists() :
+      self.labelsDesc = yaml.safe_load(labelsDescPath.read_text())
+
+    for aLabel in self.labelsDesc.keys() :
+      self.labelsDesc[aLabel] = markdown(self.labelsDesc[aLabel])
+
   def loadConfig(self, args, verbose=False) :
     self.initConfigFromArgs(args)
     self.mergeConfigFrom('config.yaml')
@@ -59,4 +71,6 @@ class Config(LpitConfig) :
     self.addIndexLevels()
 
     self.finishedLoading(args, verbose=verbose)
+
+    self.loadLabelsDesc()
 

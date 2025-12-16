@@ -44,7 +44,7 @@ def renderTheoremIndex(metaData, config) :
   theoremIndexHtml = renderTemplate(
     template,
     {
-      'labelsDesc'    : {},
+      'labelsDesc'    : config.labelsDesc,
       'theorems'      : theorems,
       'theoremLevels' : theoremLevels,
     },

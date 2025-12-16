@@ -45,7 +45,7 @@ def renderFigureIndex(metaData, config) :
   figureIndexHtml = renderTemplate(
     template,
     {
-      'labelsDesc'   : {},
+      'labelsDesc'   : config.labelsDesc,
       'figures'      : figures,
       'figureLevels' : figureLevels,
     },

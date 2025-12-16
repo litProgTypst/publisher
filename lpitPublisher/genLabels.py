@@ -1,7 +1,5 @@
 
-import yaml
-
-from markdown import markdown
+# import yaml
 
 from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
   compileKeyLevels, createRedirects
@@ -47,20 +45,12 @@ def renderLabelIndex(metaData, config) :
     config['verbose']
   )
 
-  labelsDescPath = config.cacheDir / 'labelsDesc.yaml'
-  labelsDesc = {}
-  if labelsDescPath.exists() :
-    labelsDesc = yaml.safe_load(labelsDescPath.read_text())
-
-  for aLabel in labelsDesc.keys() :
-    labelsDesc[aLabel] = markdown(labelsDesc[aLabel])
-
   template = getTemplate('labelIndex.html')
 
   labelIndexHtml = renderTemplate(
     template,
     {
-      'labelsDesc'  : labelsDesc,
+      'labelsDesc'  : config.labelsDesc,
       'labels'      : labels,
       'labelLevels' : labelLevels,
     },
