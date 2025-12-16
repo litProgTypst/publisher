@@ -28,6 +28,15 @@ class Config(LpitConfig) :
       if not aDirPath.exists() :
         aDirPath.mkdir(parents=True, exist_ok=True)
 
+  def addIndexLevels(self) :
+    indices = ['labels', 'bibliography' ]
+    if 'indexLevels' not in self.config :
+      self.config['indexLevels'] = {}
+    indexLevels = self.config['indexLevels']
+    for anIndex in indices :
+      if anIndex not in indexLevels :
+        indexLevels[anIndex] = 1
+
   def loadConfig(self, args, verbose=False) :
     self.initConfigFromArgs(args)
     self.mergeConfigFrom('config.yaml')
@@ -46,8 +55,7 @@ class Config(LpitConfig) :
     if 'webSiteName' not in self.config :
       self.config['webSiteName'] = 'LPiT Documents'
 
-    if 'labelsIndexLevel' not in self.config :
-      self.config['labelsIndexLevel'] = 1
+    self.addIndexLevels()
 
     self.finishedLoading(args, verbose=verbose)
 

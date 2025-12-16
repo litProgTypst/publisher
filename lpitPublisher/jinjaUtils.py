@@ -35,3 +35,17 @@ def renderTemplate(aTemplate, varDict, verbose=False) :
     print(repr(err))
     sys.exit(1)
 
+def compileKeyLevels(someKeys, keyIndexLevel) :
+  keyLevels = {}
+
+  for aKey in someKeys :
+    # add a key to the key levels
+    curLevel = keyLevels
+    for aLevel in range(keyIndexLevel) :
+      curTag = aKey[:aLevel + 1]
+      if curTag not in curLevel : curLevel[curTag] = {}
+      curLevel = curLevel[curTag]
+    if aKey not in curLevel : curLevel[aKey] = {}
+
+  return keyLevels
+

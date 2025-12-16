@@ -3,7 +3,8 @@ import yaml
 
 from markdown import markdown
 
-from lpitPublisher.jinjaUtils import getTemplate, renderTemplate
+from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
+  compileKeyLevels
 
 keysToIgnore = [
   'docId',
@@ -15,10 +16,7 @@ keysToIgnore = [
 
 def collectLabels(rawMD, config) :
 
-  labelsIndexLevel = config['labelsIndexLevel']
-
   labels = {}
-  labelLevels = {}
 
   for aDocKey, aDocDef in rawMD.items() :
     aDocMD = aDocDef['metaData'][0]['value']
@@ -35,15 +33,7 @@ def collectLabels(rawMD, config) :
           labels[itemLabel] = []
         labels[itemLabel].append(( aDocKey, anItem['label'], anItem['page']))
 
-        # add it to the label levels
-        curLevel = labelLevels
-        for aLevel in range(labelsIndexLevel) :
-          curTag = itemLabel[:aLevel + 1]
-          if curTag not in curLevel : curLevel[curTag] = {}
-          curLevel = curLevel[curTag]
-        if itemLabel not in curLevel : curLevel[itemLabel] = {}
-
-  return (labels, labelLevels)
+  return labels
 
 def createLabelRedirects(labels, config) :
   template = getTemplate('redirect.html')
@@ -68,7 +58,10 @@ def createLabelRedirects(labels, config) :
       redirectPath.write_text(redirectHtml)
 
 def renderLabelIndex(metaData, config) :
-  labels, labelLevels = collectLabels(metaData, config)
+  labels = collectLabels(metaData, config)
+  labelLevels = compileKeyLevels(
+    sorted(labels.keys()), config['indexLevels']['labels']
+  )
 
   createLabelRedirects(labels, config)
 

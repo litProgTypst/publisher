@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>Bibliograpy</title>
+{% endblock %}
+
+{% block header %}
+  <h1>Bibliography</h1>
+{% endblock %}
+
+{% block content %}
+<ul>
+{% for key in bibEntryLevels recursive %}
+{% set item = bibEntryLevels[key] %}
+  <li>
+    {{ key }}
+    {% if key in bibHtml %}
+    <div>{{bibHtml[key] | safe }}</div>
+    {% endif %}
+    {% if key in bibEntryTragets %}
+      <div>
+      {% for aTarget in bibEntryTragets[key] %}
+      {% set aDoc = aTarget[0] %}
+      {% set aPage = aTarget[2] %}
+        <a href="/citations/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {%- if item is mapping -%}
+      <ul>{{ loop(item) }}</ul>
+    {%- endif -%} 
+  </li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block footer %}
+{% endblock %}
