@@ -37,6 +37,7 @@ def renderWebsiteIndex(config) :
   indexHtml = renderTemplate(
     template,
     {
+      'websiteTitle' : config['webSiteName']
     },
     verbose=config['verbose']
   )
@@ -109,6 +110,10 @@ def cli() :
     shutil.copytree(
       pdfjsDir, config.webSiteCache / 'pdfjs', dirs_exist_ok=True
     )
+
+  os.system(
+    "tailwindcss --cwd lpitPublisher --input css/main.css --output ~/.cache/lpit/webSite/css/main.css"  # noqa
+  )
 
 ######################################################################
 # Run the app if called as a main

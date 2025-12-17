@@ -11,14 +11,16 @@
 {% block content %}
 <ul>
 {% for key in bibEntryLevels recursive %}
+{% set xKey = key.replace('-', '_') %}
 {% set item = bibEntryLevels[key] %}
-  <li>
-    {{ key }}
+  <li x-data="{ open{{xKey}}: false, open{{xKey}}Bib: false }">
+    <span @click="open{{xKey}} = ! open{{xKey}}">&nbsp;{{ key }}&nbsp;</span>
     {% if key in bibHtml %}
-    <div>{{bibHtml[key] | safe }}</div>
+    <span @click="open{{xKey}}Bib = ! open{{xKey}}Bib">&nbsp;(bib)&nbsp;</span>
+    <div class="border-4 border-blue-200" x-show="open{{xKey}}Bib">{{bibHtml[key] | safe }}</div>
     {% endif %}
     {% if key in bibEntryTragets %}
-      <div>
+      <div class="border-4 border-blue-200" x-show="open{{xKey}}">
       {% for aTarget in bibEntryTragets[key] %}
       {% set aDoc = aTarget[0] %}
       {% set aPage = aTarget[2] %}
@@ -27,7 +29,7 @@
       </div>
     {% endif %}
     {%- if item is mapping -%}
-      <ul>{{ loop(item) }}</ul>
+      <ul x-show="open{{xKey}}">{{ loop(item) }}</ul>
     {%- endif -%} 
   </li>
 {% endfor %}

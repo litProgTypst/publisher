@@ -13,13 +13,8 @@
 {% for aDoc in documentOrder %}
 {%   set aDocDef = metaData[aDoc] %}
 {%   set aDocTypst = aDocDef['metaData'][0]['value'] %}
-<li><span x-data="{ open: false, {% for aMD in aDocDef.markdown.keys() %} open{{aMD}}: false, {% endfor %} }">
-    <span  @click="open = ! open">
-      <span style="font-family: monospace; font-size: xx-large">
-        <span x-show="open">-</span>
-        <span x-show="! open">+</span>
-      </span>
-    </span> <strong>{{aDoc}}</strong>
+<li><span x-data="{ open{{aDoc}}: false, {% for aMD in aDocDef.markdown.keys() %} open{{aMD}}: false, {% endfor %} }">
+    <span @click="open{{aDoc}} = ! open{{aDoc}}"><strong>{{aDoc}}</strong></span>
     {% for aMD in aDocDef.markdown.keys() %}
       <span>
         <span @click="open{{aMD}} = ! open{{aMD}}">{{ aMD }}</span>
@@ -34,7 +29,7 @@
       {{ aMDText | safe }}
     </div>
     {% endfor %}
-    <div class="border-4 border-blue-200" x-show="open">
+    <div class="border-4 border-blue-200" x-show="open{{aDoc}}">
       <div class="border-4 border-red-200">
         {{ aDocDef.lpit.abstract | safe }}
       </div>

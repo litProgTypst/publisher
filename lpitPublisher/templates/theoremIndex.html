@@ -11,14 +11,16 @@
 {% block content %}
 <ul>
 {% for key in theoremLevels recursive %}
+{% set xKey = key.replace('-','_') %}
 {% set item = theoremLevels[key] %}
-  <li>
-    {{ key }}
+  <li x-data="{ open{{xKey}}: false, open{{xKey}}Desc: false }">
+    <span @click="open{{xKey}} = ! open{{xKey}}">&nbsp;{{ key }}&nbsp;</span>
     {% if key in labelsDesc %}
-    <div>{{labelsDesc[key] | safe }}</div>
+    <span @click="open{{xKey}}Desc = ! open{{xKey}}Desc">({{labelsDesc[key]['type']}})</span>
+    <div class="border-4 border-blue-200" x-show="open{{xKey}}Desc">{{labelsDesc[key]['desc'] | safe }}</div>
     {% endif %}
     {% if key in theorems %}
-      <div>
+      <div class="border-4 border-blue-200" x-show="open{{xKey}}">
       {% for aTarget in theorems[key] %}
       {% set aDoc = aTarget[0] %}
       {% set aPage = aTarget[2] %}
@@ -28,7 +30,7 @@
       </div>
     {% endif %}
     {%- if item is mapping -%}
-      <ul>{{ loop(item) }}</ul>
+      <ul x-show="open{{xKey}}">{{ loop(item) }}</ul>
     {%- endif -%} 
   </li>
 {% endfor %}
