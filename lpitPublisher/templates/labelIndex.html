@@ -15,7 +15,8 @@
   <li>
     {{ key }}
     {% if key in labelsDesc %}
-    <div>{{labelsDesc[key] | safe }}</div>
+    ({{labelsDesc[key]['type']}})
+    <div>{{labelsDesc[key]['desc'] | safe }}</div>
     {% endif %}
     {% if key in labels %}
       <div>

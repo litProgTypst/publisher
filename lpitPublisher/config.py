@@ -48,7 +48,9 @@ class Config(LpitConfig) :
       self.labelsDesc = yaml.safe_load(labelsDescPath.read_text())
 
     for aLabel in self.labelsDesc.keys() :
-      self.labelsDesc[aLabel] = markdown(self.labelsDesc[aLabel])
+      self.labelsDesc[aLabel]['desc'] = markdown(
+        self.labelsDesc[aLabel]['desc']
+      )
 
   def loadConfig(self, args, verbose=False) :
     self.initConfigFromArgs(args)
