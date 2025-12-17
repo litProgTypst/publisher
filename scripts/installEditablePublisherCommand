@@ -27,6 +27,7 @@ installScript lpitCollector
 installScript lpitGenerator
 installScript lpitDocumentInit
 installScript lpitStylesUpdater
+installScript lpitDeploy
 
 cp scripts/lpitPushChanges ~/.local/bin
 
