@@ -1,5 +1,5 @@
 
-import yaml
+# import yaml
 
 from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
   compileKeyLevels, createRedirects
@@ -62,8 +62,6 @@ def collectReferences(metaData, config) :
       if label not in references :
         references[label] = []
       references[label].append((aDocKey, label, page, 'link'))
-
-  print(yaml.dump(references))
 
   return references
 
