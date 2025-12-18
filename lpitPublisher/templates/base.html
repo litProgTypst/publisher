@@ -21,12 +21,31 @@
   <link href="/css/main.css" rel="stylesheet">
 </head>
 <body>
+
+  <div>
+    <nav class="p-5">
+    <a class="underline pr-5" href="/index.html">{{webSiteName}}</a>
+    {% for aPage in pages.list %}
+    <a class="underline pr-1" href="{{pages.desc[aPage].url}}">{{pages.desc[aPage].short}}</a>
+    {% endfor %}
+    </nav>
+  </div>
+
+  <div class="p-5">
   {% block header %}
   {% endblock %}
+  </div>
+
+  <div>
   {% block content %}
   {% endblock %}
+  </div>
+
+  <div>
   {% block footer %}
   {% endblock %}
+  </div>
+
 </body>
 </html>
 

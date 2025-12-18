@@ -10,11 +10,9 @@
 
 {% block content %}
 <ul>
-  <li><a href="toc.html">Table of contents</a></li>
-  <li><a href="labelIndex.html">Index of Labels</a></li>
-  <li><a href="theoremIndex.html">Index of Theorems</a></li>
-  <li><a href="figureIndex.html">Index of Figures</a></li>
-  <li><a href="bibliography.html">Bibliograpy</a></li>
+  {% for aPage in pages.list %}
+  <li><a href="{{pages.desc[aPage].url}}">{{pages.desc[aPage].long}}</a></li>
+  {% endfor %}
 </ul>
 {% endblock %}
 

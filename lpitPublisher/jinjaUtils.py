@@ -4,6 +4,8 @@ import yaml
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 
+from lpitPublisher.config import Config
+
 ######################################################################
 # Setup templates
 
@@ -22,7 +24,40 @@ def getTemplate(aTemplateName) :
     print(repr(err))
     sys.exit(1)
 
+pages = {
+  'list' : ['toc', 'labels', 'theorems', 'figures', 'bibliography'],
+  'desc': {
+    'toc' : {
+      'url'   : '/toc.html',
+      'short' : 'Contents',
+      'long'  : 'Table of cotents'
+    },
+    'labels' : {
+      'url'   : '/labelIndex.html',
+      'short' : 'Labels',
+      'long'  : 'Index of labels'
+    },
+    'theorems' : {
+      'url'   : '/theoremIndex.html',
+      'short' : 'Theorems',
+      'long'  : 'Index of theorems'
+    },
+    'figures' : {
+      'url'   : '/figureIndex.html',
+      'short' : 'Figures',
+      'long'  : 'Index of figures'
+    },
+    'bibliography' : {
+      'url'   : '/bibliography.html',
+      'short' : 'Bibliography',
+      'long'  : 'Bibliography'
+    }
+  }
+}
+
 def renderTemplate(aTemplate, varDict, verbose=False) :
+  varDict['webSiteName'] = Config()['webSiteName']
+  varDict['pages'] = pages
   if verbose :
     print("----------------------------------------------")
     print(aTemplate.name)
