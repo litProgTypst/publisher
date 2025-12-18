@@ -29,6 +29,16 @@ async def runShellCmdIn(aCmd, aDir) :
     aProcStderr.decode(encoding="utf-8"),
   )
 
+def assembleTypstCmd(preambleList, inputPath, outputPath, config) :
+  cmd = preambleList
+  cmd.extend(['--input', 'project=' + config['project'] ])
+  for aProject, aProjectDef in config['projects'].items() :
+    if 'url' in aProjectDef :
+      cmd.extend(['--input', 'proj-' + aProject + '=' + aProjectDef['url'] ])
+  cmd.append(str(inputPath))
+  cmd.append(str(outputPath))
+  return " ".join(cmd)
+
 async def getDocumentMetadata(workerId, docQueue, config, metadata) :
   while 0 < docQueue.qsize() :
     aDoc = await docQueue.get()
@@ -45,7 +55,12 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
 
       if 'metadata' in config['formats'] :
         queryStdout, queryStderr = await runShellCmdIn(
-          f"typst query --format yaml --input metadata=1 {docFileName} \"<lpitMetaData>\"",  # noqa
+          assembleTypstCmd(
+            ['typst', 'query', '--format', 'yaml', '--input', 'metadata=1'],
+            docFileName,
+            '"<lpitMetaData>"',
+            config
+          ),
           rootDir
         )
 
@@ -59,7 +74,12 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
 
       if 'pdf' in config['formats'] :
         pdfStdout, pdfStderr = await runShellCmdIn(
-          f"typst compile --format pdf {docFileName} {config.pdfCache}/{docFileName.replace('.typ','.pdf')}",  # noqa
+          assembleTypstCmd(
+            [ 'typst', 'compile', '--format', 'pdf' ],
+            docFileName,
+            config.pdfCache / docFileName.replace('.typ','.pdf'),
+            config
+          ),
           rootDir
         )
 
@@ -72,7 +92,12 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
         svgDocDir = config.svgCache / docFileName.replace('.typ','')
         svgDocDir.mkdir(parents=True, exist_ok=True)
         svgStdout, svgStderr = await runShellCmdIn(
-          f"typst compile --format svg {docFileName} {svgDocDir}/page{{0p}}.svg",  # noqa
+          assembleTypstCmd(
+            ['typst', 'compile', '--format', 'svg'],
+            docFileName,
+            svgDocDir / 'page{0p}.svg',
+            config
+          ),
           rootDir
         )
 
@@ -83,7 +108,12 @@ async def getDocumentMetadata(workerId, docQueue, config, metadata) :
 
       if 'html' in config['formats'] :
         htmlStdout, htmlStderr = await runShellCmdIn(
-          f"typst compile --format html --features html {docFileName} {config.htmlCache}/{docFileName.replace('.typ','.html')}",  # noqa
+          assembleTypstCmd(
+            ['typst', 'compile', '--format', 'html', '--features', 'html'],
+            docFileName,
+            config.htmlCache / docFileName.replace('.typ','.html'),
+            config
+          ),
           rootDir
         )
 

@@ -60,6 +60,7 @@
     theData.longTitle = longTitle
     // theData.abstract = query(<abstract>)
     theData.inputs   = sys.inputs
+    theData.test = sys.inputs.at("proj-" + "fp")
     [ #metadata(theData) <lpitMetaData> ]
   }
   [ #longTitle #label("title") ]
@@ -68,6 +69,35 @@
 #let abstract(body) = [
   #align(center, body) #label("abstract")
 ]
+
+#let interCollectionRefAt(project, docId, label, page, text) = {
+  if "proj-" + project in sys.inputs {
+    if page == 0 {
+      page = "index"
+    }
+    link(
+      sys.inputs.at("proj-" + project) + "/labels/" + docId + "/" + str(label) + "/" + str(page) + ".html",
+      text
+    )
+  }
+}
+
+#let interCollectionRef(project, docId, label, text) = {
+  interCollectionRefAt(project, docId, label, 0, text)
+}
+
+#let interDocRefAt(docId, label, page, text) = {
+  interCollectionRef(sys.inputs.project, docId, label, page, text)
+}
+
+#let interDocRef(docId, label, text) = {
+  interCollectionRefAt(sys.inputs.project, docId, label, 0, text)
+}
+
+#let icRefAt = interCollectionRefAt
+#let icRef   = interCollectionRef
+#let idRefAt = interDocRefAt
+#let idRef   = interDocRef
 
 #let setupDoc(lpitDef, doc) = {
   // document set and show rules

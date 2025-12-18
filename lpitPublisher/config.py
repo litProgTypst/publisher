@@ -59,7 +59,9 @@ class Config(LpitConfig) :
 
     if args['project'] :
       if args['project'] in self.config['projects'] :
-        self.mergeConfigFrom(self.config['projects'][args['project']])
+        projConfig = self.config['projects'][args['project']]
+        if 'config' in projConfig :
+          self.mergeConfigFrom(projConfig['config'])
 
     if 'monitor' not in self.config :
       self.config['monitor'] = ['*.typ', '*.bib' ]
