@@ -1,3 +1,17 @@
+// see: https://github.com/typst/typst/issues/2196#issuecomment-1728135476
+// see: https://github.com/typst/typst/discussions/3876#discussioncomment-9016808
+#let lpit-to-string(content) = {
+  if content.has("text") {
+    content.text
+  } else if content.has("children") {
+    content.children.map(lpit-to-string).join("")
+  } else if content.has("body") {
+    to-string(content.body)
+  } else if content == [ ] {
+    " "
+  }
+}
+
 #let getPageNum(aQuery) = {
   return aQuery.location().page()
 }
@@ -70,8 +84,10 @@
   return (
     "type": "link",
     "label": aQuery.at("label", default: "none"),
+    "dest": aQuery.at("dest", default: "none"),
+    "text": lpit-to-string(aQuery.at("body", default: "none")),
     "page": getPageNum(aQuery),
-    //"data": aQuery,
+    // "data": aQuery,
   )
 }
 

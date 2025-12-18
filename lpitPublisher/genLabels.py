@@ -1,5 +1,5 @@
 
-# import yaml
+import yaml
 
 from lpitPublisher.jinjaUtils import getTemplate, renderTemplate, \
   compileKeyLevels, createRedirects
@@ -12,11 +12,11 @@ keysToIgnore = [
   'shortTitle',
 ]
 
-def collectLabels(rawMD, config) :
+def collectLabels(metaData) :
 
   labels = {}
 
-  for aDocKey, aDocDef in rawMD.items() :
+  for aDocKey, aDocDef in metaData.items() :
     aDocMD = aDocDef['metaData'][0]['value']
     for aKey in aDocMD.keys() :
       if aKey in keysToIgnore : continue
@@ -33,15 +33,56 @@ def collectLabels(rawMD, config) :
 
   return labels
 
+def collectReferences(metaData, config) :
+  references = {}
+
+  collectionUrls = []
+  for aProject, projDef in config['projects'].items() :
+    if 'url' in projDef :
+      collectionUrls.append(projDef['url'])
+
+  for aDocKey, aDocDef in metaData.items() :
+    aDocMD = aDocDef['metaData'][0]['value']
+    for aRef in aDocMD['ref'] :
+      label = aRef['target'].strip('<>')
+      page  = aRef['page']
+      if label not in references :
+        references[label] = []
+      references[label].append((aDocKey, label, page, 'ref'))
+    for aLink in aDocMD['link'] :
+      destBody = None
+      for aUrl in collectionUrls :
+        if aLink['dest'].startswith(aUrl) :
+          destBody = aLink['dest'].removeprefix(aUrl)
+          break
+      if not destBody : continue
+      destParts = destBody.split('/')
+      label = destParts[3]
+      page  = aLink['page']
+      if label not in references :
+        references[label] = []
+      references[label].append((aDocKey, label, page, 'link'))
+
+  print(yaml.dump(references))
+
+  return references
+
 def renderLabelIndex(metaData, config) :
-  labels = collectLabels(metaData, config)
+  labels = collectLabels(metaData)
   labelLevels = compileKeyLevels(
     sorted(labels.keys()), config['indexLevels']['labels']
   )
+  references = collectReferences(metaData, config)
 
   createRedirects(
     labels,
     config.webSiteCache / 'labels',
+    config['verbose']
+  )
+
+  createRedirects(
+    references,
+    config.webSiteCache / 'references',
     config['verbose']
   )
 
@@ -76,6 +117,7 @@ def renderLabelIndex(metaData, config) :
     {
       'labelsDesc'  : config.labelsDesc,
       'labels'      : labels,
+      'references'  : references,
       'labelLevels' : labelLevels,
     },
     verbose=config['verbose']

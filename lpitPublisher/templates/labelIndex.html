@@ -21,10 +21,21 @@
     {% endif %}
     {% if key in labels %}
       <div class="border-4 border-blue-200" x-show="open{{xKey}}">
+      <strong>Definitions:</strong>
       {% for aTarget in labels[key] %}
       {% set aDoc = aTarget[0] %}
       {% set aPage = aTarget[2] %}
         <a href="/labels/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a>
+      {% endfor %}
+      </div>
+    {% endif %}
+    {% if key in references %}
+      <div class="border-4 border-blue-200" x-show="open{{xKey}}">
+      <strong>Uses:</strong>
+      {% for aTarget in references[key] %}
+      {% set aDoc = aTarget[0] %}
+      {% set aPage = aTarget[2] %}
+        <a href="/references/{{aDoc}}/{{key}}/{{aPage}}.html" target="lpit_{{aDoc}}">{{aDoc}}-{{aPage}}</a>
       {% endfor %}
       </div>
     {% endif %}

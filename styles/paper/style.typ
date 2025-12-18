@@ -32,19 +32,6 @@
 // to capture the headings and their associated page numbers as well as
 // the abstract.
 
-// see: https://github.com/typst/typst/issues/2196#issuecomment-1728135476
-#let lpit-to-string(content) = {
-  if content.has("text") {
-    content.text
-  } else if content.has("children") {
-    content.children.map(to-string).join("")
-  } else if content.has("body") {
-    to-string(content.body)
-  } else if content == [ ] {
-    " "
-  }
-}
-
 #let lpitDocument(
   docId,
   shortTitle: [],
