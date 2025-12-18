@@ -10,8 +10,8 @@
 
 {% block content %}
 <ul>
-  {% for aPage in pages.list %}
-  <li><a href="{{pages.desc[aPage].url}}">{{pages.desc[aPage].long}}</a></li>
+  {% for aPage in webPages.list %}
+  <li><a href="{{webPages.desc[aPage].url}}">{{webPages.desc[aPage].long}}</a></li>
   {% endfor %}
 </ul>
 {% endblock %}

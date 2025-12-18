@@ -24,7 +24,7 @@ def getTemplate(aTemplateName) :
     print(repr(err))
     sys.exit(1)
 
-pages = {
+webPages = {
   'list' : ['toc', 'labels', 'theorems', 'figures', 'bibliography'],
   'desc': {
     'toc' : {
@@ -57,7 +57,7 @@ pages = {
 
 def renderTemplate(aTemplate, varDict, verbose=False) :
   varDict['webSiteName'] = Config()['webSiteName']
-  varDict['pages'] = pages
+  varDict['webPages'] = webPages
   if verbose :
     print("----------------------------------------------")
     print(aTemplate.name)

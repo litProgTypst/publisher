@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block head %}
+  <title>List of pages for the {{label}} label in {{docId}}</title>
+{% endblock %}
+
+{% block header %}
+  <h1>List of pages for the {{label}} label in {{docId}}</h1>
+{% endblock %}
+
+{% block content %}
+{% for aPage in docPages %}
+  <a href="/labels/{{docId}}/{{label}}/{{aPage}}.html" target="lpit_{{docId}}">{{docId}}-{{label}}-{{aPage}}</a>
+{% endfor %}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

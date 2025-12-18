@@ -45,6 +45,30 @@ def renderLabelIndex(metaData, config) :
     config['verbose']
   )
 
+  template = getTemplate('labelTargetIndex.html')
+
+  for aLabel, someTargets in labels.items() :
+    docPages = {}
+    for aTarget in someTargets :
+      docId, tLabel, page = aTarget
+      if docId not in docPages :
+        docPages[docId] = []
+      docPages[docId].append(page)
+
+    for aDoc, somePages in docPages.items() :
+      labelTargetHtml = renderTemplate(
+        template,
+        {
+          'docPages' : somePages,
+          'docId'    : docId,
+          'label'    : aLabel
+        },
+        verbose=config['verbose']
+      )
+      labelTargetPath = config.webSiteCache / 'labels' / aDoc / aLabel / 'index.html'  # noqa
+      labelTargetPath.parent.mkdir(parents=True, exist_ok=True)
+      labelTargetPath.write_text(labelTargetHtml)
+
   template = getTemplate('labelIndex.html')
 
   labelIndexHtml = renderTemplate(

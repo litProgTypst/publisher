@@ -25,8 +25,8 @@
   <div>
     <nav class="p-5">
     <a class="underline pr-5" href="/index.html">{{webSiteName}}</a>
-    {% for aPage in pages.list %}
-    <a class="underline pr-1" href="{{pages.desc[aPage].url}}">{{pages.desc[aPage].short}}</a>
+    {% for aPage in webPages.list %}
+    <a class="underline pr-1" href="{{webPages.desc[aPage].url}}">{{webPages.desc[aPage].short}}</a>
     {% endfor %}
     </nav>
   </div>

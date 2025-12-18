@@ -57,12 +57,6 @@ class Config(LpitConfig) :
     self.mergeConfigFrom('config.yaml')
     self.mergeConfigFrom('publisher.yaml')
 
-    if args['project'] :
-      if args['project'] in self.config['projects'] :
-        projConfig = self.config['projects'][args['project']]
-        if 'config' in projConfig :
-          self.mergeConfigFrom(projConfig['config'])
-
     if 'monitor' not in self.config :
       self.config['monitor'] = ['*.typ', '*.bib' ]
 

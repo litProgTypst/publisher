@@ -14,6 +14,8 @@ from lpitPublisher.genBibliography import renderBibliography
 from lpitPublisher.genTheorems import renderTheoremIndex
 from lpitPublisher.genFigures import renderFigureIndex
 
+codeDir = Path(__file__).parent
+
 ######################################################################
 
 def renderTableOfContents(documentOrder, metaData, config) :
@@ -112,7 +114,7 @@ def cli() :
     )
 
   os.system(
-    "tailwindcss --cwd lpitPublisher --input css/main.css --output ~/.cache/lpit/webSite/css/main.css"  # noqa
+    f"tailwindcss --cwd {codeDir} --input css/main.css --output ~/.cache/lpit/webSite/css/main.css"  # noqa
   )
 
 ######################################################################
