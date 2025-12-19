@@ -30,7 +30,7 @@ webPages = {
     'toc' : {
       'url'   : '/toc.html',
       'short' : 'Contents',
-      'long'  : 'Table of cotents'
+      'long'  : 'Table of contents'
     },
     'labels' : {
       'url'   : '/labelIndex.html',
